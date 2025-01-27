@@ -7,7 +7,8 @@ const DefaultLayout = () => {
       <AppSidebar />
       <div className="wrapper d-flex flex-column min-vh-100">
         <AppHeader />
-        <div className="body flex-grow-1">
+        {/* Použití container-fluid pro plnou šířku */}
+        <div className="body flex-grow-2 container-fluid">
           <AppContent />
         </div>
         <AppFooter />

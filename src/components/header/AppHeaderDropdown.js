@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState, useContext } from 'react'
+import { UserContext } from '../UserContext'
 import {
   CAvatar,
-  CBadge,
   CDropdown,
   CDropdownDivider,
   CDropdownHeader,
@@ -9,84 +9,118 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react'
-import {
-  cilBell,
-  cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
-  cilLockLocked,
-  cilSettings,
-  cilTask,
-  cilUser,
-} from '@coreui/icons'
+import { cilLockLocked, cilUser } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
-import avatar8 from './../../assets/images/avatars/8.jpg'
+import { signOut } from 'firebase/auth'
+import { auth } from '../../firebaseConfig'
+import { useNavigate } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
+  const navigate = useNavigate()
+  const { userEmail, setUserEmail, zakaznikId, setZakaznikId, zakaznikNazev, setZakaznikNazev, zakaznikIC, setZakaznikIC } = useContext(UserContext)
+
+  const [customers, setCustomers] = useState([]) // Stav pro seznam zákazníků
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      navigate('/login')
+    } catch (error) {
+      console.error('Error during sign out:', error)
+    }
+  }
+
+  const user = auth.currentUser
+  let initials = '??'
+
+  if (user) {
+    const fullName = user.displayName || null
+    if (fullName) {
+      const parts = fullName.trim().split(' ')
+      initials = parts.map((part) => part[0].toUpperCase()).join('')
+    } else if (user.email) {
+      const emailNamePart = user.email.split('@')[0]
+      initials = emailNamePart[0].toUpperCase()
+      if (emailNamePart.length > 1) {
+        initials += emailNamePart[1].toUpperCase()
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (user && user.email && userEmail !== user.email) {
+      setUserEmail(user.email)
+    }
+  }, [user, userEmail, setUserEmail])
+
+  // Načtení zákazníků
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      try {
+        const response = await fetch(`/api/customers?email=${userEmail}`)
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        setCustomers(data) // Uložíme všechny zákazníky
+        if (data.length > 0) {
+          setZakaznikId(data[0].ZakaznikId)
+          setZakaznikNazev(data[0].Nazev)
+          setZakaznikIC(data[0].IC)
+        }
+      } catch (error) {
+        console.error('Error fetching customer data:', error)
+      }
+    }
+
+    if (userEmail) {
+      fetchCustomers()
+    }
+  }, [userEmail, setZakaznikId, setZakaznikNazev, setZakaznikIC])
+
+  // Funkce pro změnu zákazníka
+  const handleCustomerSelect = (customer) => {
+    setZakaznikId(customer.ZakaznikId)
+    setZakaznikNazev(customer.Nazev)
+    setZakaznikIC(customer.IC)
+  }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar color="warning" textColor="white" shape="rounded" size="md">
+          {initials}
+        </CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">Account</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilBell} className="me-2" />
-          Updates
-          <CBadge color="info" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilEnvelopeOpen} className="me-2" />
-          Messages
-          <CBadge color="success" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilTask} className="me-2" />
-          Tasks
-          <CBadge color="danger" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilCommentSquare} className="me-2" />
-          Comments
-          <CBadge color="warning" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownHeader className="bg-body-secondary fw-semibold my-2">Settings</CDropdownHeader>
-        <CDropdownItem href="#">
-          <CIcon icon={cilUser} className="me-2" />
-          Profile
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilSettings} className="me-2" />
-          Settings
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilCreditCard} className="me-2" />
-          Payments
-          <CBadge color="secondary" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
-          <CIcon icon={cilFile} className="me-2" />
-          Projects
-          <CBadge color="primary" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
+        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
+          Zákazník: {zakaznikId} - {zakaznikIC}
+        </CDropdownHeader>
+
+        {/* Dropdown pro výběr zákazníka */}
+        <CDropdownHeader className="bg-body-secondary fw-semibold">Vyberte zákazníka</CDropdownHeader>
+        {customers.length > 0 ? (
+          customers.map((customer) => (
+            <CDropdownItem
+              key={customer.ZakaznikId}
+              active={customer.ZakaznikId === zakaznikId}
+              onClick={() => handleCustomerSelect(customer)}
+            >
+              {customer.Nazev}
+            </CDropdownItem>
+          ))
+        ) : (
+          <CDropdownItem disabled>Žádní zákazníci</CDropdownItem>
+        )}
+
         <CDropdownDivider />
-        <CDropdownItem href="#">
+
+        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">{userEmail}</CDropdownHeader>
+
+        <CDropdownDivider />
+        <CDropdownItem onClick={handleLogout} style={{ cursor: 'pointer' }}>
           <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+          Odhlásit se
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>

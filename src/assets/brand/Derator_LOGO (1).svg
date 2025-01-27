@@ -1,0 +1,43 @@
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   viewBox="0 0 2763.6001 705.6853"
+   height="705.6853"
+   width="2763.6001">
+  <g transform="matrix(1.3333333,0,0,-1.3333333,0,705.68533)">
+    <!-- První znak D -->
+    <text
+       style="font-size:114.5727005px;font-family:'Bauhaus 93';fill:#f1511b;"
+       transform="matrix(0.95000031,0,0,-1,0,41.2988)">
+      <tspan y="0" x="0">D</tspan>
+    </text>
+    <!-- Ostatní text -->
+    <text
+       style="font-size:114.5727005px;font-family:'Bauhaus 93';fill:#e0e0e0;"
+       transform="matrix(0.95000031,0,0,-1,79.6665,41.2988)">
+      <tspan y="0" x="0 55.224041 123.73852 191.56555 250.5705 288.60864 347.84271 415.66977 501.82843 557.05249 585.69562 611.24536">ERATIZACE - </tspan>
+      <tspan y="0" x="639.88855">D</tspan>
+      <tspan y="0" x="723.75574 778.9798 838.21387 876.25201 943.73535 991.11115 1046.3352 1120.2346 1206.3932 1261.6173 1290.2605 1315.8102">EZINSEKCE - </tspan>
+      <tspan y="0" x="1344.4534">D</tspan>
+      <tspan y="0" x="1428.3206 1483.5446 1542.7787 1580.7595 1648.2429 1703.3523 1758.5764 1832.4757 1918.6344">EZINFEKCE</tspan>
+    </text>
+    <g>
+      <!-- Velký text DERATOR -->
+      <text
+         style="font-size:487.66009521px;font-family:'Bauhaus 93';fill:#f1511b;"
+         transform="matrix(0.9484801,0,0,-1,-24.5684,183.5742)">
+        <tspan y="0" x="0">D</tspan>
+      </text>
+      <text
+         style="font-size:487.66009521px;font-family:'Bauhaus 93';fill:#e0e0e0;"
+         transform="matrix(0.9484801,0,0,-1,360,183.5742)">
+        <tspan y="0" x="0 356.96719 592.01935 883.64008 1172.3348 1423.4799 1790.6879">ERATOR</tspan>
+      </text>
+      <!-- Symbol ® -->
+      <text
+         style="font-size:149.60749817px;font-family:'Arial Black';fill:#e0e0e0;"
+         transform="matrix(0.94999983,0,0,-1,1950.4941,408.8789)">
+        <tspan y="0" x="0">®</tspan>
+      </text>
+    </g>
+  </g>
+</svg>

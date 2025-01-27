@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import { CRow, CCol, CCard, CCardHeader, CCardBody } from '@coreui/react'
 import { rgbToHex } from '@coreui/utils'
-import { DocsLink } from 'src/components'
+import { UserContext } from './../../../components/UserContext'
 
 const ThemeView = () => {
   const [color, setColor] = useState('rgb(255, 255, 255)')
@@ -53,7 +53,6 @@ const Colors = () => {
       <CCard className="mb-4">
         <CCardHeader>
           Theme colors
-          <DocsLink href="https://coreui.io/docs/utilities/colors/" />
         </CCardHeader>
         <CCardBody>
           <CRow>

@@ -3,12 +3,20 @@ import React from 'react'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
+const Invoice = React.lazy(() => import('./views/Invoice/Invoice'))
+const Kontroly = React.lazy(() => import('./views/Kontroly/Kontroly'))
+const Trendy = React.lazy(() => import('./views/Trendy/Trendy'))
+const SafetyLists = React.lazy(() => import('./views/SafetyLists/SafetyLists'))
+const Certifikaty = React.lazy(() => import('./views/Certifikaty/Certifikaty'))
+const TrendyDetail = React.lazy(() => import('./views/TrendyDetail/TrendyDetail'))
+const Harmonogram = React.lazy(() => import('./views/Harmonogram/Harmonogram'))
+const StanickyDetail = React.lazy(() => import('./views/StanickyDetail/StanickyDetail'))
+const Mapy = React.lazy(() => import('./views/Mapy/Mapy'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
 const Cards = React.lazy(() => import('./views/base/cards/Cards'))
-const Carousels = React.lazy(() => import('./views/base/carousels/Carousels'))
 const Collapses = React.lazy(() => import('./views/base/collapses/Collapses'))
 const ListGroups = React.lazy(() => import('./views/base/list-groups/ListGroups'))
 const Navs = React.lazy(() => import('./views/base/navs/Navs'))
@@ -56,12 +64,19 @@ const routes = [
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
   { path: '/theme', name: 'Theme', element: Colors, exact: true },
   { path: '/theme/colors', name: 'Colors', element: Colors },
-  { path: '/theme/typography', name: 'Typography', element: Typography },
+  { path: '/Invoice', name: 'Faktury', element: Invoice },
+  { path: '/Kontroly', name: 'Vyhodnocení kontrol', element: Kontroly },
+  { path: '/Trendy', name: 'Roční trendy', element: Trendy },
+  { path: '/SafetyLists', name: 'Bezpečnostní listy', element: SafetyLists },
+  { path: '/TrendyDetail', name: 'Trendy grafy', element: TrendyDetail },
+  { path: '/Certifikaty', name: 'Certifikaty', element: Certifikaty },
+  { path: '/Harmonogram', name: 'Harmonogram', element: Harmonogram },
+  { path: '/StanickyDetail', name: 'Kontrolni body ', element: StanickyDetail },
+  { path: '/Mapy', name: 'Mapy umístění bodů ', element: Mapy },
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
   { path: '/base/breadcrumbs', name: 'Breadcrumbs', element: Breadcrumbs },
   { path: '/base/cards', name: 'Cards', element: Cards },
-  { path: '/base/carousels', name: 'Carousel', element: Carousels },
   { path: '/base/collapses', name: 'Collapse', element: Collapses },
   { path: '/base/list-groups', name: 'List Groups', element: ListGroups },
   { path: '/base/navs', name: 'Navs', element: Navs },

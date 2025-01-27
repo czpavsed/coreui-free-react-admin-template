@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -23,10 +23,12 @@ import {
   cilMenu,
   cilMoon,
   cilSun,
+  cilFactory, // Přidání ikony pro firmu
 } from '@coreui/icons'
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import { UserContext } from '../components/UserContext'
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -34,6 +36,8 @@ const AppHeader = () => {
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
+
+  const { zakaznikNazev } = useContext(UserContext) // Načtení názvu zákazníka z kontextu
 
   useEffect(() => {
     document.addEventListener('scroll', () => {
@@ -51,40 +55,32 @@ const AppHeader = () => {
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
+
+        {/* Navigační menu */}
         <CHeaderNav className="d-none d-md-flex">
           <CNavItem>
             <CNavLink to="/dashboard" as={NavLink}>
               Dashboard
             </CNavLink>
           </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem>
         </CHeaderNav>
-        <CHeaderNav className="ms-auto">
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
-            </CNavLink>
-          </CNavItem>
+
+        {/* Zobrazení názvu zákazníka s ikonou firmy */}
+        <CHeaderNav className="ms-auto me-3">
+          {zakaznikNazev && (
+            <span className="text-medium-emphasis fw-bold d-flex align-items-center">
+              <CIcon icon={cilFactory} size="lg" className="me-2" /> {/* Ikona firmy */}
+              {zakaznikNazev}
+            </span>
+          )}
         </CHeaderNav>
+
         <CHeaderNav>
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
+
+          {/* Přepínač režimu */}
           <CDropdown variant="nav-item" placement="bottom-end">
             <CDropdownToggle caret={false}>
               {colorMode === 'dark' ? (
@@ -125,12 +121,16 @@ const AppHeader = () => {
               </CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
+
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
+
+          {/* Dropdown s uživatelskými informacemi */}
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
+
       <CContainer className="px-4" fluid>
         <AppBreadcrumb />
       </CContainer>
