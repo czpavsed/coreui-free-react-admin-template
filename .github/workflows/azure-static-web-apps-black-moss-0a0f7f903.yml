@@ -22,6 +22,16 @@ jobs:
         with:
           submodules: true
           lfs: false
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm install
+      - name: Check for Symlink Loops
+        run: |
+          find . -type l -exec ls -l {} \; | grep -- "->" || echo "No symbolic links found or no symlink loops detected."
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
