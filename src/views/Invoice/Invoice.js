@@ -28,8 +28,8 @@ const Invoice = () => {
         return
       }
 
-      const email = process.env.REACT_APP_VYFAKTURUJ_EMAIL;
-      const apiKey = process.env.REACT_APP_VYFAKTURUJ_API_KEY;
+      const email = import.meta.env.VITE_API_EMAIL;
+      const apiKey = import.meta.env.VITE_API_KEY;      
 
 
       if (!email || !apiKey) {
