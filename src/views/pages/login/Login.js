@@ -123,7 +123,7 @@ const Login = ({ onLoginSuccess }) => {
                   </div>
 
                   <div className="mt-3 text-center">
-                    Nemáte účet? <Link to="/register">Registrujte se</Link>
+                  V případě, že nemáte registraci do našeho systému, zaregistrujte se prosím emailem, kterým s námi komunikujete. <Link to="/register">Registrovat</Link>
                   </div>
                 </CForm>
               </CCardBody>
