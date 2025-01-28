@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   CButton,
   CCard,
@@ -11,31 +11,59 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
-import { auth } from '../../../firebaseConfig'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import logo from 'src/assets/images/Logo.png' // Import loga
+  CAlert, // Přidáme alert komponentu pro zobrazení zpráv
+} from "@coreui/react";
+import CIcon from "@coreui/icons-react";
+import { cilLockLocked, cilUser } from "@coreui/icons";
+import { auth } from "../../../firebaseConfig";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import logo from "src/assets/images/Logo.png";
 
 const Login = ({ onLoginSuccess }) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); // Stav pro chybovou zprávu
+  const [successMessage, setSuccessMessage] = useState(""); // Stav pro úspěšnou zprávu
+  const navigate = useNavigate();
+
+  // 🔹 Funkce pro reset hesla
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setErrorMessage("Zadejte prosím svůj e-mail.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setSuccessMessage("Na váš e-mail byl odeslán odkaz pro reset hesla.");
+    } catch (error) {
+      console.error("Chyba při odesílání resetovacího e-mailu:", error);
+      setErrorMessage("Chyba při odeslání e-mailu. Zkontrolujte, zda je e-mail správný.");
+    }
+  };
 
   const handleLogin = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    setErrorMessage(""); // Resetuje chybovou zprávu před novým pokusem
+    setSuccessMessage(""); // Resetuje úspěšnou zprávu
+
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-      if (onLoginSuccess) {
-        onLoginSuccess()
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        setErrorMessage("Váš e-mail není ověřen! Zkontrolujte svou e-mailovou schránku.");
+        return;
       }
-      navigate('/')
+
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+      navigate("/");
     } catch (error) {
-      console.error(error)
-      alert('Chyba přihlášení. Prosím, zkontrolute email a heslo.')
+      console.error(error);
+      setErrorMessage("Chyba přihlášení. Prosím, zkontrolujte e-mail a heslo.");
     }
-  }
+  };
 
   return (
     <div className="login-page">
@@ -48,6 +76,14 @@ const Login = ({ onLoginSuccess }) => {
                 <CForm onSubmit={handleLogin}>
                   <h1>Přihlášení</h1>
                   <p className="text-body-secondary">Přihlašte se prosím.</p>
+
+                  {/* 🔹 Zobrazení chybové zprávy */}
+                  {errorMessage && <CAlert color="danger">{errorMessage}</CAlert>}
+                  
+                  {/* 🔹 Zobrazení úspěšné zprávy */}
+                  {successMessage && <CAlert color="success">{successMessage}</CAlert>}
+
+                  {/* EMAIL */}
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
@@ -60,6 +96,8 @@ const Login = ({ onLoginSuccess }) => {
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </CInputGroup>
+
+                  {/* HESLO */}
                   <CInputGroup className="mb-4">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
@@ -72,34 +110,29 @@ const Login = ({ onLoginSuccess }) => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </CInputGroup>
-                  <CRow>
-                    <CCol xs={6}>
-                      <CButton type="submit" color="primary" className="px-4">
-                        Přihlásit
-                      </CButton>
-                    </CCol>
-                    <CCol xs={6} className="text-right">
-                      <CButton color="link" className="px-0">
-                        Zapomenuté heslo?
-                      </CButton>
-                    </CCol>
-                  </CRow>
+
+                  <CButton type="submit" color="primary" className="w-100">
+                    Přihlásit
+                  </CButton>
+
+                  {/* 🔹 Tlačítko pro reset hesla */}
+                  <div className="mt-3 text-center">
+                    <CButton color="link" className="px-0" onClick={handleForgotPassword}>
+                      Zapomenuté heslo?
+                    </CButton>
+                  </div>
+
+                  <div className="mt-3 text-center">
+                    Nemáte účet? <Link to="/register">Registrujte se</Link>
+                  </div>
                 </CForm>
-                <div className="mt-4 text-center">
-                  <p>
-                  V případě, že nemáte registraci do našeho systému, zaregistrujte se prosím emailem, kterým s námi komunikujete. {' '}
-                    <Link to="/register">
-                        Registrovat.
-                    </Link>
-                  </p>
-                </div>
               </CCardBody>
             </CCard>
           </CCol>
         </CRow>
       </CContainer>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
