@@ -19,6 +19,7 @@ import { CChartBar } from '@coreui/react-chartjs';
 
 // Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const Harmonogram = () => {
   const { zakaznikId } = useContext(UserContext); // Získání zakaznikId z kontextu
@@ -35,7 +36,7 @@ const Harmonogram = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get('/api/harmonogram', {
+        const response = await axios.get(`${API_BASE_URL}harmonogram`, {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,

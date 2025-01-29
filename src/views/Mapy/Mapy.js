@@ -20,6 +20,7 @@ import CIcon from '@coreui/icons-react';
 
 // Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const Mapy = () => {
   const { zakaznikId } = useContext(UserContext);
@@ -37,7 +38,7 @@ const Mapy = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get('/api/mapy', {
+        const response = await axios.get(`${API_BASE_URL}mapy`, {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
@@ -57,7 +58,7 @@ const Mapy = () => {
 
   const generateTokenAndFetchUrl = async (blobName, type) => {
     try {
-      const response = await axios.get('/api/download', {
+      const response = await axios.get(`${API_BASE_URL}download`, {
         params: { blobName, type },
         headers: {
           'Authorization': `Bearer ${API_ACCESS_KEY}`,

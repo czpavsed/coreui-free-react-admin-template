@@ -20,6 +20,7 @@ import CIcon from '@coreui/icons-react';
 
 // Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const Kontroly = () => {
   const { zakaznikId } = useContext(UserContext); // Získání zakaznikId z kontextu
@@ -37,7 +38,7 @@ const Kontroly = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`/api/inspections`, {
+        const response = await axios.get(`${API_BASE_URL}inspections`, {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
@@ -60,7 +61,7 @@ const Kontroly = () => {
     const blobName = encodeURIComponent(fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', ''));
 
     axios
-      .get(`/api/download`, {
+      .get(`${API_BASE_URL}download`, {
         params: { blobName, type: 'download' },
         responseType: 'blob',
       })
@@ -83,7 +84,7 @@ const Kontroly = () => {
     const blobName = encodeURIComponent(fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', ''));
 
     axios
-      .get(`/api/download`, {
+    .get(`${API_BASE_URL}download`, {
         params: { blobName, type: 'view' },
       })
       .then((response) => {

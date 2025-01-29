@@ -21,6 +21,7 @@ import PDFViewer from './PDFViewer';
 
 // Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const Certifikaty = () => {
   const { zakaznikId } = useContext(UserContext);
@@ -41,7 +42,7 @@ const Certifikaty = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get('/api/certifikaty', {
+        const response = await axios.get(`${API_BASE_URL}certifikaty`, {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
@@ -65,7 +66,7 @@ const Certifikaty = () => {
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get('/api/download', {
+    axios.get(`${API_BASE_URL}download`, {
       params: { blobName, type: 'download' },
       responseType: 'blob',
     })
@@ -88,7 +89,7 @@ const Certifikaty = () => {
   const handleViewPdf = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get('/api/download', {
+    axios.get(`${API_BASE_URL}download`, {
       params: { blobName, type: 'view' },
     })
       .then(response => {

@@ -18,6 +18,7 @@ import axios from 'axios'
 
 // Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const AppHeaderDropdown = () => {
   const navigate = useNavigate()
@@ -61,7 +62,7 @@ const AppHeaderDropdown = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get('/api/customers', {
+        const response = await axios.get(`${API_BASE_URL}customers`, {
           params: { email: userEmail },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,

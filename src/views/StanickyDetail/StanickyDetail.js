@@ -24,7 +24,8 @@ import { CChartLine } from '@coreui/react-chartjs';
 import { getStyle } from '@coreui/utils';
 import { UserContext } from './../../components/UserContext';
 
-// Načtení API klíče z .env souboru pro Vite
+// ✅ API URL a Token z .env
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 
 const Checkpoints = () => {
@@ -53,7 +54,7 @@ const Checkpoints = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get('/api/checkpoints', {
+        const response = await axios.get(`${API_BASE_URL}checkpoints`, {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
@@ -63,13 +64,13 @@ const Checkpoints = () => {
         const sortedData = response.data.sort((a, b) => a.Číslo_staničky - b.Číslo_staničky);
         setCheckpoints(sortedData);
 
-        const uniqueServices = Array.from(new Set(sortedData.map((item) => item.Služba)));
+        const uniqueServices = [...new Set(sortedData.map((item) => item.Služba))];
         setServices(uniqueServices);
 
-        const uniqueObjects = Array.from(new Set(sortedData.map((item) => item.Objekt)));
+        const uniqueObjects = [...new Set(sortedData.map((item) => item.Objekt))];
         setObjects(uniqueObjects);
 
-        const uniqueSpaces = Array.from(new Set(sortedData.map((item) => item.Prostor)));
+        const uniqueSpaces = [...new Set(sortedData.map((item) => item.Prostor))];
         setSpaces(uniqueSpaces);
       } catch (error) {
         console.error('Chyba při načítání kontrolních bodů:', error);
@@ -83,24 +84,27 @@ const Checkpoints = () => {
   }, [zakaznikId]);
 
   const fetchTrendData = async (stanickaId) => {
+    if (!stanickaId) {
+      console.error('Neplatné stanickaId.');
+      setTrendError('Neplatné ID stanice.');
+      return;
+    }
+
     setTrendLoading(true);
     setTrendError(null);
 
     try {
-      const response = await axios.get('/api/vyhodnoceni', {
+      const response = await axios.get(`${API_BASE_URL}vyhodnoceni`, {
         params: { stanickaId },
         headers: {
           'Authorization': `Bearer ${API_ACCESS_KEY}`,
         },
       });
 
-      console.log('🔹 API response:', response.data); // Debugging
-
-      if (response.data.length > 0) {
-        setTrendData(response.data);
+      if (response.data.length === 0) {
+        setTrendError('Žádná data pro trend.');
       } else {
-        setTrendData([]);
-        setTrendError('Žádná data pro zobrazení.');
+        setTrendData(response.data);
       }
     } catch (error) {
       console.error('Chyba při načítání trendu:', error);
@@ -111,26 +115,41 @@ const Checkpoints = () => {
   };
 
   const handleShowTrend = (checkpoint) => {
+    if (!checkpoint || !checkpoint.stanickaId) {
+      console.error('Neplatná stanice pro zobrazení trendu.');
+      return;
+    }
     setSelectedCheckpoint(checkpoint);
-    console.log('🔹 Selected checkpoint:', checkpoint); // Debugging
-    fetchTrendData(checkpoint.StanickaID); // Oprava předání parametru
+    fetchTrendData(checkpoint.stanickaId);
     setShowModal(true);
   };
-
-  const filteredData = checkpoints.filter((item) => {
-    return (
-      (selectedService ? item.Služba === selectedService : true) &&
-      (selectedObject ? item.Objekt === selectedObject : true) &&
-      (selectedSpace ? item.Prostor === selectedSpace : true)
-    );
-  });
 
   const formatDate = (dateString) => {
     if (!dateString) return null;
     const date = new Date(dateString);
-    return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}.${date.getFullYear()}`;
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${year}`;
+  };
+
+  const dataForChart = {
+    labels: trendData.map((data) => formatDate(data.Datum_zasahu)),
+    datasets: [
+      {
+        label: 'Stav',
+        borderColor: getStyle('--cui-info'),
+        backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
+        borderWidth: 2,
+        data: trendData.map((data) => data.Stav),
+      },
+      {
+        label: 'Limit',
+        borderColor: getStyle('--cui-success'),
+        backgroundColor: `rgba(${getStyle('--cui-success-rgb')}, .1)`,
+        borderWidth: 2,
+        data: trendData.map((data) => data.Target),
+      },
+    ],
   };
 
   return (
@@ -153,20 +172,19 @@ const Checkpoints = () => {
                   <CTableHeaderCell>Umístění</CTableHeaderCell>
                   <CTableHeaderCell>Služba</CTableHeaderCell>
                   <CTableHeaderCell>Nástraha</CTableHeaderCell>
+                  <CTableHeaderCell>Limit</CTableHeaderCell>
                   <CTableHeaderCell>Akce</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {filteredData.length > 0 ? (
-                  filteredData.map((item, index) => (
+                {checkpoints.length > 0 ? (
+                  checkpoints.map((item, index) => (
                     <CTableRow key={index}>
-                      <CTableDataCell>
-                        {item.Číslo_staničky}
-                        {item.Označení_staničky ? ` (${item.Označení_staničky})` : ''}
-                      </CTableDataCell>
+                      <CTableDataCell>{item.Číslo_staničky} {item.Označení_staničky && `(${item.Označení_staničky})`}</CTableDataCell>
                       <CTableDataCell>{item.Umistění}</CTableDataCell>
                       <CTableDataCell>{item.Služba}</CTableDataCell>
                       <CTableDataCell>{item.Nástraha}</CTableDataCell>
+                      <CTableDataCell>{item.Target} {item.Vyhodnocení_jednotka}</CTableDataCell>
                       <CTableDataCell>
                         <CButton color="info" size="sm" onClick={() => handleShowTrend(item)}>
                           Zobrazit trend
@@ -183,19 +201,19 @@ const Checkpoints = () => {
                 )}
               </CTableBody>
             </CTable>
-
-            {/* Modální okno pro trend */}
-            <CModal visible={showModal} onClose={() => setShowModal(false)} size="lg" centered>
-              <CModalHeader>
-                <CModalTitle>Trend stanice {selectedCheckpoint?.Číslo_staničky}</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                {trendLoading ? <CSpinner /> : trendError ? <p>{trendError}</p> : <CChartLine data={trendData} />}
-              </CModalBody>
-            </CModal>
           </>
         )}
       </CCardBody>
+
+      {/* Modální okno pro trend */}
+      <CModal visible={showModal} onClose={() => setShowModal(false)} size="lg" centered>
+        <CModalHeader>
+          <CModalTitle>Trend - {selectedCheckpoint?.Služba}</CModalTitle>
+        </CModalHeader>
+        <CModalBody>
+          {trendLoading ? <CSpinner /> : trendError ? <p style={{ color: 'red' }}>{trendError}</p> : <CChartLine data={dataForChart} style={{ height: '400px' }} />}
+        </CModalBody>
+      </CModal>
     </CCard>
   );
 };

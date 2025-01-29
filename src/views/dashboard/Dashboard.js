@@ -21,6 +21,7 @@ import axios from 'axios'
 
 // Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const Dashboard = () => {
   const { zakaznikId, userEmail } = useContext(UserContext) // Přístup k zakaznikId a userEmail
@@ -37,7 +38,7 @@ const Dashboard = () => {
 
       try {
         // Načtení trendových dat podle zakaznikId
-        const trendResponse = await axios.get('/api/trends', {
+        const trendResponse = await axios.get(`${API_BASE_URL}trends`, {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
@@ -47,7 +48,7 @@ const Dashboard = () => {
         setTrendData(trendResponse.data)
 
         // Načtení dat pro karty s filtrováním dle zakaznikId
-        const dataResponse = await axios.get('/api/customers', {
+        const dataResponse = await axios.get(`${API_BASE_URL}customers`, {
           params: { email: userEmail },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
