@@ -132,6 +132,8 @@ const Checkpoints = () => {
     return `${month}/${year}`;
   };
 
+  const yAxisUnit = trendData.length > 0 ? trendData[0].Vyhodnocení_jednotka : '';
+
   const dataForChart = {
     labels: trendData.map((data) => formatDate(data.Datum_zasahu)),
     datasets: [
@@ -152,10 +154,82 @@ const Checkpoints = () => {
     ],
   };
 
+  const optionsForChart = {
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Měsíc/Rok',
+          color: getStyle('--cui-gray-800'),
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: `Hodnota (${yAxisUnit})`,
+          color: getStyle('--cui-gray-800'),
+        },
+        beginAtZero: true,
+      },
+    },
+  };
+
+  const filteredCheckpoints = checkpoints.filter((checkpoint) => {
+    return (
+      (selectedService === '' || checkpoint.Služba === selectedService) &&
+      (selectedObject === '' || checkpoint.Objekt === selectedObject) &&
+      (selectedSpace === '' || checkpoint.Prostor === selectedSpace)
+    );
+  });
+
   return (
     <CCard className="mb-4">
       <CCardHeader>Přehled kontrolních bodů</CCardHeader>
       <CCardBody>
+        <CRow className="mb-3">
+          <CCol xs={4}>
+            <CFormSelect
+              value={selectedService}
+              onChange={(e) => setSelectedService(e.target.value)}
+              aria-label="Vyberte službu"
+            >
+              <option value="">Všechny služby</option>
+              {services.map((service, index) => (
+                <option key={index} value={service}>
+                  {service}
+                </option>
+              ))}
+            </CFormSelect>
+          </CCol>
+          <CCol xs={4}>
+            <CFormSelect
+              value={selectedObject}
+              onChange={(e) => setSelectedObject(e.target.value)}
+              aria-label="Vyberte objekt"
+            >
+              <option value="">Všechny objekty</option>
+              {objects.map((object, index) => (
+                <option key={index} value={object}>
+                  {object}
+                </option>
+              ))}
+            </CFormSelect>
+          </CCol>
+          <CCol xs={4}>
+            <CFormSelect
+              value={selectedSpace}
+              onChange={(e) => setSelectedSpace(e.target.value)}
+              aria-label="Vyberte prostor"
+            >
+              <option value="">Všechny prostory</option>
+              {spaces.map((space, index) => (
+                <option key={index} value={space}>
+                  {space}
+                </option>
+              ))}
+            </CFormSelect>
+          </CCol>
+        </CRow>
         {loading ? (
           <div className="text-center">
             <CSpinner />
@@ -177,8 +251,8 @@ const Checkpoints = () => {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {checkpoints.length > 0 ? (
-                  checkpoints.map((item, index) => (
+                {filteredCheckpoints.length > 0 ? (
+                  filteredCheckpoints.map((item, index) => (
                     <CTableRow key={index}>
                       <CTableDataCell>{item.Číslo_staničky} {item.Označení_staničky && `(${item.Označení_staničky})`}</CTableDataCell>
                       <CTableDataCell>{item.Umistění}</CTableDataCell>
@@ -194,7 +268,7 @@ const Checkpoints = () => {
                   ))
                 ) : (
                   <CTableRow>
-                    <CTableDataCell colSpan="5" className="text-center">
+                    <CTableDataCell colSpan="6" className="text-center">
                       Žádné kontrolní body nebyly nalezeny.
                     </CTableDataCell>
                   </CTableRow>
@@ -211,7 +285,7 @@ const Checkpoints = () => {
           <CModalTitle>Trend - {selectedCheckpoint?.Služba}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {trendLoading ? <CSpinner /> : trendError ? <p style={{ color: 'red' }}>{trendError}</p> : <CChartLine data={dataForChart} style={{ height: '400px' }} />}
+          {trendLoading ? <CSpinner /> : trendError ? <p style={{ color: 'red' }}>{trendError}</p> : <CChartLine data={dataForChart} options={optionsForChart} style={{ height: '400px' }} />}
         </CModalBody>
       </CModal>
     </CCard>
