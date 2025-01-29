@@ -46,7 +46,7 @@ const Mapy = () => {
         setMaps(response.data);
       } catch (error) {
         console.error('Chyba při načítání map:', error);
-        setError('Nepodařilo se načíst data pro mapy.');
+        setError('Nepodařilo se načíst data pro mapy.' ${API_ACCESS_KEY});
       } finally {
         setLoading(false);
       }
