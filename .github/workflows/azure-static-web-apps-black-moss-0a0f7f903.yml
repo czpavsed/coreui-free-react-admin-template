@@ -17,6 +17,7 @@ jobs:
     env:
       VITE_API_EMAIL: ${{ secrets.VITE_API_EMAIL }}
       VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
+      VITA_API_ACCESS_KEY: ${{ secrets.API_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v3
         with:
