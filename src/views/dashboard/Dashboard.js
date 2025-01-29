@@ -23,6 +23,16 @@ import axios from 'axios'
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
+// Import obrázků
+import Pavel from 'src/assets/images/Pavel.jpg'
+import Tomáš from 'src/assets/images/Tomáš.jpg'
+import Filip from 'src/assets/images/Filip.jpg'
+import Jaromír from 'src/assets/images/Jaromír.jpg'
+import Petr from 'src/assets/images/Petr.jpg'
+import Libor from 'src/assets/images/Libor.jpg'
+import Věra from 'src/assets/images/Věra.jpg'
+import Avatar from 'src/assets/images/D.png'
+
 const Dashboard = () => {
   const { zakaznikId, userEmail } = useContext(UserContext) // Přístup k zakaznikId a userEmail
   const [trendData, setTrendData] = useState([])
@@ -82,6 +92,27 @@ const Dashboard = () => {
     return `${day}.${month}.${year}`
   }
 
+  const getImagePath = (employeeName) => {
+    switch (employeeName) {
+      case 'Pavel':
+        return Pavel
+      case 'Tomáš':
+        return Tomáš
+      case 'Filip':
+        return Filip
+      case 'Jaromír':
+        return Jaromír
+      case 'Petr':
+        return Petr
+      case 'Libor':
+        return Libor
+      case 'Věra':
+        return Věra
+      default:
+        return Avatar
+    }
+  }
+
   return (
     <>
       {/* Karty Plánovaná kontrola a Technik */}
@@ -106,7 +137,7 @@ const Dashboard = () => {
                   <CCardHeader>Technik:</CCardHeader>
                   <CCardBody className="d-flex align-items-center">
                     <img
-                      src={`src/assets/images/${item.Jmeno}.jpg`}
+                      src={getImagePath(item.Jmeno)}
                       alt={`${item.Jmeno} ${item.Prijmeni}`}
                       style={{ width: '15%', borderRadius: '10px', marginRight: '10px' }}
                     />
