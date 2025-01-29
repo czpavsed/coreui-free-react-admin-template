@@ -93,7 +93,15 @@ const Checkpoints = () => {
           'Authorization': `Bearer ${API_ACCESS_KEY}`,
         },
       });
-      setTrendData(response.data);
+
+      console.log('🔹 API response:', response.data); // Debugging
+
+      if (response.data.length > 0) {
+        setTrendData(response.data);
+      } else {
+        setTrendData([]);
+        setTrendError('Žádná data pro zobrazení.');
+      }
     } catch (error) {
       console.error('Chyba při načítání trendu:', error);
       setTrendError('Nepodařilo se načíst data trendu.');
@@ -104,7 +112,8 @@ const Checkpoints = () => {
 
   const handleShowTrend = (checkpoint) => {
     setSelectedCheckpoint(checkpoint);
-    fetchTrendData(checkpoint.stanickaId);
+    console.log('🔹 Selected checkpoint:', checkpoint); // Debugging
+    fetchTrendData(checkpoint.StanickaID); // Oprava předání parametru
     setShowModal(true);
   };
 
@@ -119,34 +128,10 @@ const Checkpoints = () => {
   const formatDate = (dateString) => {
     if (!dateString) return null;
     const date = new Date(dateString);
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${month}/${year}`;
+    return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}.${date.getFullYear()}`;
   };
-
-  const dataForChart = {
-    labels: trendData.map((data) => formatDate(data.Datum_zasahu)),
-    datasets: [
-      {
-        label: 'Stav',
-        backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
-        borderColor: getStyle('--cui-info'),
-        pointHoverBackgroundColor: getStyle('--cui-info'),
-        borderWidth: 2,
-        data: trendData.map((data) => data.Stav),
-      },
-      {
-        label: 'Limit',
-        backgroundColor: `rgba(${getStyle('--cui-success-rgb')}, .1)`,
-        borderColor: getStyle('--cui-success'),
-        pointHoverBackgroundColor: getStyle('--cui-success'),
-        borderWidth: 2,
-        data: trendData.map((data) => data.Target),
-      },
-    ],
-  };
-
-  const yAxisUnit = trendData.length > 0 ? trendData[0].Vyhodnocení_jednotka : '';
 
   return (
     <CCard className="mb-4">
@@ -161,7 +146,6 @@ const Checkpoints = () => {
           <p style={{ color: 'red' }}>{error}</p>
         ) : (
           <>
-            {/* Tabulka */} 
             <CTable hover responsive className="mt-4">
               <CTableHead color="light">
                 <CTableRow>
@@ -184,11 +168,7 @@ const Checkpoints = () => {
                       <CTableDataCell>{item.Služba}</CTableDataCell>
                       <CTableDataCell>{item.Nástraha}</CTableDataCell>
                       <CTableDataCell>
-                        <CButton
-                          color="info"
-                          size="sm"
-                          onClick={() => handleShowTrend(item)}
-                        >
+                        <CButton color="info" size="sm" onClick={() => handleShowTrend(item)}>
                           Zobrazit trend
                         </CButton>
                       </CTableDataCell>
@@ -203,6 +183,16 @@ const Checkpoints = () => {
                 )}
               </CTableBody>
             </CTable>
+
+            {/* Modální okno pro trend */}
+            <CModal visible={showModal} onClose={() => setShowModal(false)} size="lg" centered>
+              <CModalHeader>
+                <CModalTitle>Trend stanice {selectedCheckpoint?.Číslo_staničky}</CModalTitle>
+              </CModalHeader>
+              <CModalBody>
+                {trendLoading ? <CSpinner /> : trendError ? <p>{trendError}</p> : <CChartLine data={trendData} />}
+              </CModalBody>
+            </CModal>
           </>
         )}
       </CCardBody>
