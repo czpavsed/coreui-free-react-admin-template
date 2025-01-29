@@ -37,7 +37,7 @@ const Mapy = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get('https://portal.derator.cz/api/mapy', {
+        const response = await axios.get('/api/mapy', {
           params: { zakaznikId },
           headers: {
             'Authorization': `Bearer ${API_ACCESS_KEY}`,
