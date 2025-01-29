@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState, useContext } from 'react';
+import axios from 'axios';
 import {
   CCard,
   CCardBody,
@@ -12,62 +12,73 @@ import {
   CTableRow,
   CButton,
   CSpinner,
-} from '@coreui/react'
-import { UserContext } from './../../components/UserContext'
-import PDFViewer from './PDFViewer'
-import { cilCloudDownload, cilMagnifyingGlass } from '@coreui/icons'
-import CIcon from '@coreui/icons-react'
+} from '@coreui/react';
+import { UserContext } from './../../components/UserContext';
+import PDFViewer from './PDFViewer';
+import { cilCloudDownload, cilMagnifyingGlass } from '@coreui/icons';
+import CIcon from '@coreui/icons-react';
+
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 
 const Mapy = () => {
-  const { zakaznikId } = useContext(UserContext)
-  const [maps, setMaps] = useState([])
-  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const { zakaznikId } = useContext(UserContext);
+  const [maps, setMaps] = useState([]);
+  const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchMaps = async () => {
       if (!zakaznikId) {
-        console.error('ZakaznikId není dostupné.')
-        return
+        console.error('ZakaznikId není dostupné.');
+        return;
       }
 
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await axios.get(`/api/mapy`, {
+        const response = await axios.get('https://portal.derator.cz/api/mapy', {
           params: { zakaznikId },
-        })
-        setMaps(response.data)
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
+        });
+        setMaps(response.data);
       } catch (error) {
-        console.error('Chyba při načítání map:', error)
-        setError('Nepodařilo se načíst data pro mapy.')
+        console.error('Chyba při načítání map:', error);
+        setError('Nepodařilo se načíst data pro mapy.');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchMaps()
-  }, [zakaznikId])
+    fetchMaps();
+  }, [zakaznikId]);
 
   const generateTokenAndFetchUrl = async (blobName, type) => {
     try {
-      const response = await axios.get(`/api/download`, {
+      const response = await axios.get('/api/download', {
         params: { blobName, type },
-      })
-      return response.data.url
+        headers: {
+          'Authorization': `Bearer ${API_ACCESS_KEY}`,
+        },
+      });
+      return response.data.url;
     } catch (error) {
-      console.error('Chyba při generování tokenu:', error)
-      return null
+      console.error('Chyba při generování tokenu:', error);
+      return null;
     }
-  }
+  };
 
   const downloadFile = (fullUrl) => {
-    // Dekóduje URL jednou, aby se odstranilo nadbytečné kódování
     const blobName = decodeURIComponent(fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', ''));
-  
-    axios.get(`/api/download`, {
+
+    axios.get('/api/download', {
       params: { blobName, type: 'download' },
       responseType: 'blob',
+      headers: {
+        'Authorization': `Bearer ${API_ACCESS_KEY}`,
+      },
     })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -83,33 +94,30 @@ const Mapy = () => {
         console.error('Chyba při stahování souboru:', error);
       });
   };
-  
-  
-  
 
   const handleViewPdf = async (fullUrl) => {
-    const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '')
+    const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    const viewUrl = await generateTokenAndFetchUrl(blobName, 'view')
+    const viewUrl = await generateTokenAndFetchUrl(blobName, 'view');
     if (viewUrl) {
-      setSelectedPdfUrl(viewUrl)
+      setSelectedPdfUrl(viewUrl);
     }
-  }
+  };
 
   const handleBackToList = () => {
-    setSelectedPdfUrl(null)
-  }
+    setSelectedPdfUrl(null);
+  };
 
   const formatDate = (dateString) => {
-    if (!dateString) return null
-    const date = new Date(dateString)
+    if (!dateString) return null;
+    const date = new Date(dateString);
     return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1)
       .toString()
-      .padStart(2, '0')}.${date.getFullYear()}`
-  }
+      .padStart(2, '0')}.${date.getFullYear()}`;
+  };
 
   if (selectedPdfUrl) {
-    return <PDFViewer pdfUrl={selectedPdfUrl} onBack={handleBackToList} />
+    return <PDFViewer pdfUrl={selectedPdfUrl} onBack={handleBackToList} />;
   }
 
   return (
@@ -167,7 +175,7 @@ const Mapy = () => {
         )}
       </CCardBody>
     </CCard>
-  )
-}
+  );
+};
 
-export default Mapy
+export default Mapy;
