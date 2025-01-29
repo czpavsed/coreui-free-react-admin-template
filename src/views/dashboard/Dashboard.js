@@ -17,6 +17,10 @@ import {
 } from '@coreui/react'
 import TrendChart from './TrendChart'
 import { UserContext } from './../../components/UserContext'
+import axios from 'axios'
+
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 
 const Dashboard = () => {
   const { zakaznikId, userEmail } = useContext(UserContext) // Přístup k zakaznikId a userEmail
@@ -33,20 +37,31 @@ const Dashboard = () => {
 
       try {
         // Načtení trendových dat podle zakaznikId
-        const trendResponse = await fetch(`/api/trends?zakaznikId=${zakaznikId}`)
-        const trendData = await trendResponse.json()
-        setTrendData(trendData)
+        const trendResponse = await axios.get('/api/trends', {
+          params: { zakaznikId },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
+        });
+
+        setTrendData(trendResponse.data)
 
         // Načtení dat pro karty s filtrováním dle zakaznikId
-        const dataResponse = await fetch(`/api/customers?email=${userEmail}`)
-        const rawData = await dataResponse.json()
+        const dataResponse = await axios.get('/api/customers', {
+          params: { email: userEmail },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
+        });
+
+        const rawData = dataResponse.data
 
         // Filtrování podle zakaznikId
         const filteredData = rawData.filter((item) => item.ZakaznikId === zakaznikId)
         setData(filteredData)
 
         // Získání unikátních SluzbaID
-        const services = Array.from(new Set(trendData.map((item) => item.SluzbaID)))
+        const services = Array.from(new Set(trendResponse.data.map((item) => item.SluzbaID)))
         setUniqueServices(services)
 
       } catch (error) {
@@ -68,8 +83,8 @@ const Dashboard = () => {
 
   return (
     <>
-          {/* Karty Plánovaná kontrola a Technik */}
-          <CRow>
+      {/* Karty Plánovaná kontrola a Technik */}
+      <CRow>
         {data.map((item, index) => (
           <CCol sm={6} key={index}>
             <CRow>
@@ -125,7 +140,6 @@ const Dashboard = () => {
           </CCard>
         </CCol>
       </CRow>
-
     </>
   )
 }

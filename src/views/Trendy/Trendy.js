@@ -18,6 +18,9 @@ import PDFViewer from './PDFViewer'
 import { cilCloudDownload, cilMagnifyingGlass } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+
 const Trendy = () => {
   const { zakaznikId } = useContext(UserContext)
   const [trendy, setTrendy] = useState([])
@@ -37,6 +40,9 @@ const Trendy = () => {
       try {
         const response = await axios.get(`/api/inspections`, {
           params: { zakaznikId },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
         })
         
         // Filtrování pouze trendů s vyplněnou URL adresou

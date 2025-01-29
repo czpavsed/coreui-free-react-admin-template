@@ -24,6 +24,9 @@ import { CChartLine } from '@coreui/react-chartjs';
 import { getStyle } from '@coreui/utils';
 import { UserContext } from './../../components/UserContext';
 
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+
 const Checkpoints = () => {
   const { zakaznikId } = useContext(UserContext);
   const [checkpoints, setCheckpoints] = useState([]);
@@ -52,6 +55,9 @@ const Checkpoints = () => {
       try {
         const response = await axios.get('/api/checkpoints', {
           params: { zakaznikId },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
         });
 
         const sortedData = response.data.sort((a, b) => a.Číslo_staničky - b.Číslo_staničky);
@@ -83,6 +89,9 @@ const Checkpoints = () => {
     try {
       const response = await axios.get('/api/vyhodnoceni', {
         params: { stanickaId },
+        headers: {
+          'Authorization': `Bearer ${API_ACCESS_KEY}`,
+        },
       });
       setTrendData(response.data);
     } catch (error) {
@@ -152,50 +161,7 @@ const Checkpoints = () => {
           <p style={{ color: 'red' }}>{error}</p>
         ) : (
           <>
-            {/* Filtry */}
-            <CRow className="mb-3">
-              <CCol xs={4}>
-                <CFormSelect
-                  value={selectedService}
-                  onChange={(e) => setSelectedService(e.target.value)}
-                >
-                  <option value="">Všechny služby</option>
-                  {services.map((service, index) => (
-                    <option key={index} value={service}>
-                      {service}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-              <CCol xs={4}>
-                <CFormSelect
-                  value={selectedObject}
-                  onChange={(e) => setSelectedObject(e.target.value)}
-                >
-                  <option value="">Všechny objekty</option>
-                  {objects.map((object, index) => (
-                    <option key={index} value={object}>
-                      {object}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-              <CCol xs={4}>
-                <CFormSelect
-                  value={selectedSpace}
-                  onChange={(e) => setSelectedSpace(e.target.value)}
-                >
-                  <option value="">Všechny prostory</option>
-                  {spaces.map((space, index) => (
-                    <option key={index} value={space}>
-                      {space}
-                    </option>
-                  ))}
-                </CFormSelect>
-              </CCol>
-            </CRow>
-
-            {/* Tabulka */}
+            {/* Tabulka */} 
             <CTable hover responsive className="mt-4">
               <CTableHead color="light">
                 <CTableRow>
@@ -237,52 +203,6 @@ const Checkpoints = () => {
                 )}
               </CTableBody>
             </CTable>
-
-            {/* Modální okno pro trend */}
-            <CModal visible={showModal} onClose={() => setShowModal(false)} size="lg" centered>
-              <CModalHeader>
-                <CModalTitle>
-                  Trend požeru/záchytu - {selectedCheckpoint?.Služba} - Kontrolni bod č.: {selectedCheckpoint?.Číslo_staničky}{selectedCheckpoint?.Označení_staničky}
-                </CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                {trendLoading ? (
-                  <CSpinner />
-                ) : trendError ? (
-                  <p style={{ color: 'red' }}>{trendError}</p>
-                ) : (
-                  <CChartLine
-                    data={dataForChart}
-                    options={{
-                      maintainAspectRatio: false,
-                      scales: {
-                        x: {
-                          title: {
-                            display: true,
-                            text: 'Měsíc/Rok',
-                            color: getStyle('--cui-gray-800'),
-                          },
-                        },
-                        y: {
-                          title: {
-                            display: true,
-                            text: `Hodnota (${yAxisUnit})`,
-                            color: getStyle('--cui-gray-800'),
-                          },
-                          beginAtZero: true,
-                        },
-                      },
-                      plugins: {
-                        legend: {
-                          position: 'bottom',
-                        },
-                      },
-                    }}
-                    style={{ height: '400px', marginBottom: '30px' }}
-                  />
-                )}
-              </CModalBody>
-            </CModal>
           </>
         )}
       </CCardBody>

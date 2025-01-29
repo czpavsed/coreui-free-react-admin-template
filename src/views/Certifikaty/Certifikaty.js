@@ -19,6 +19,9 @@ import {
 import { UserContext } from './../../components/UserContext';
 import PDFViewer from './PDFViewer';
 
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+
 const Certifikaty = () => {
   const { zakaznikId } = useContext(UserContext);
   const [certifikaty, setCertifikaty] = useState([]);
@@ -28,7 +31,7 @@ const Certifikaty = () => {
   const [error, setError] = useState(null);
   const [selectedTyp, setSelectedTyp] = useState('Vše');
 
-  // Načtení certifikátů
+  // Načtení certifikátů s ověřením API klíčem
   useEffect(() => {
     const fetchCertifikaty = async () => {
       if (!zakaznikId) {
@@ -38,9 +41,13 @@ const Certifikaty = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`/api/certifikaty`, {
+        const response = await axios.get('/api/certifikaty', {
           params: { zakaznikId },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
         });
+
         setCertifikaty(response.data);
         setFilteredCertifikaty(response.data);
       } catch (error) {
@@ -54,13 +61,13 @@ const Certifikaty = () => {
     fetchCertifikaty();
   }, [zakaznikId]);
 
-  // Funkce pro stažení souboru
+  // Funkce pro stažení souboru (ZŮSTALO BEZE ZMĚNY)
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get(`/api/download`, {
+    axios.get('/api/download', {
       params: { blobName, type: 'download' },
-      responseType: 'blob'
+      responseType: 'blob',
     })
       .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -77,12 +84,12 @@ const Certifikaty = () => {
       });
   };
 
-  // Funkce pro zobrazení PDF
+  // Funkce pro zobrazení PDF (ZŮSTALO BEZE ZMĚNY)
   const handleViewPdf = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get(`/api/download`, {
-      params: { blobName, type: 'view' }
+    axios.get('/api/download', {
+      params: { blobName, type: 'view' },
     })
       .then(response => {
         setSelectedPdfUrl(response.data.url);

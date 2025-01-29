@@ -18,6 +18,9 @@ import PDFViewer from './PDFViewer';
 import { cilCloudDownload, cilMagnifyingGlass } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
+
 const Kontroly = () => {
   const { zakaznikId } = useContext(UserContext); // Získání zakaznikId z kontextu
   const [inspections, setInspections] = useState([]);
@@ -36,6 +39,9 @@ const Kontroly = () => {
       try {
         const response = await axios.get(`/api/inspections`, {
           params: { zakaznikId },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
         });
         const sortedData = response.data.sort((a, b) => new Date(b.Datum) - new Date(a.Datum));
         setInspections(sortedData);

@@ -122,7 +122,7 @@ const Mapy = () => {
 
   return (
     <CCard className="mb-4">
-      <CCardHeader>Přehled map ${API_ACCESS_KEY}</CCardHeader>
+      <CCardHeader>Přehled map</CCardHeader>
       <CCardBody>
         {loading ? (
           <div className="text-center">

@@ -14,7 +14,10 @@ import {
   CSpinner
 } from '@coreui/react';
 import { UserContext } from './../../components/UserContext';
-import PDFViewer from './PDFViewer'
+import PDFViewer from './PDFViewer';
+
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 
 const SafetyLists = () => {
   const { zakaznikId } = useContext(UserContext);
@@ -35,6 +38,9 @@ const SafetyLists = () => {
       try {
         const response = await axios.get(`/api/safety-list`, {
           params: { zakaznikId },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
         });
         setSafetyLists(response.data);
       } catch (error) {

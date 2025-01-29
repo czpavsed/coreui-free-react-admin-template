@@ -14,6 +14,10 @@ import CIcon from '@coreui/icons-react'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+
+// Načtení API klíče z .env souboru pro Vite
+const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY
 
 const AppHeaderDropdown = () => {
   const navigate = useNavigate()
@@ -53,16 +57,20 @@ const AppHeaderDropdown = () => {
     }
   }, [user, userEmail, setUserEmail])
 
-  // Načtení zákazníků
+  // Načtení zákazníků s ověřením API klíčem
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await fetch(`/api/customers?email=${userEmail}`)
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const data = await response.json()
+        const response = await axios.get('/api/customers', {
+          params: { email: userEmail },
+          headers: {
+            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+          },
+        })
+
+        const data = response.data
         setCustomers(data) // Uložíme všechny zákazníky
+
         if (data.length > 0) {
           setZakaznikId(data[0].ZakaznikId)
           setZakaznikNazev(data[0].Nazev)
