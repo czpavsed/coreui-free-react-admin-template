@@ -11,47 +11,40 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
-  CAlert, // Přidáme alert komponentu pro zobrazení zpráv
+  CAlert,
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilLockLocked, cilUser } from "@coreui/icons";
 import { auth } from "../../../firebaseConfig";
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import logo from "src/assets/images/Logo.png";
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Stav pro chybovou zprávu
-  const [successMessage, setSuccessMessage] = useState(""); // Stav pro úspěšnou zprávu
+  const [message, setMessage] = useState(""); // Pro ukládání UI hlášek
+  const [userForVerification, setUserForVerification] = useState(null);
   const navigate = useNavigate();
-
-  // 🔹 Funkce pro reset hesla
-  const handleForgotPassword = async () => {
-    if (!email) {
-      setErrorMessage("Zadejte prosím svůj e-mail.");
-      return;
-    }
-    try {
-      await sendPasswordResetEmail(auth, email);
-      setSuccessMessage("Na váš e-mail byl odeslán odkaz pro reset hesla.");
-    } catch (error) {
-      console.error("Chyba při odesílání resetovacího e-mailu:", error);
-      setErrorMessage("Chyba při odeslání e-mailu. Zkontrolujte, zda je e-mail správný.");
-    }
-  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Resetuje chybovou zprávu před novým pokusem
-    setSuccessMessage(""); // Resetuje úspěšnou zprávu
+    setMessage("");
+    setUserForVerification(null);
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       if (!user.emailVerified) {
-        setErrorMessage("Váš e-mail není ověřen! Zkontrolujte svou e-mailovou schránku.");
+        setUserForVerification(user); // Uložíme uživatele pro možnost znovu odeslat ověření
+        setMessage(
+          <>
+            <p>Váš e-mail není ověřen! Zkontrolujte svou e-mailovou schránku.</p>
+            <CButton color="link" size="sm" onClick={() => resendVerificationEmail(user)}>
+              Znovu odeslat ověřovací e-mail
+            </CButton>
+          </>
+        );
         return;
       }
 
@@ -61,7 +54,17 @@ const Login = ({ onLoginSuccess }) => {
       navigate("/");
     } catch (error) {
       console.error(error);
-      setErrorMessage("Chyba přihlášení. Prosím, zkontrolujte e-mail a heslo.");
+      setMessage("Chyba přihlášení. Prosím, zkontrolujte email a heslo.");
+    }
+  };
+
+  const resendVerificationEmail = async (user) => {
+    try {
+      await sendEmailVerification(user);
+      setMessage("Ověřovací e-mail byl znovu odeslán.");
+    } catch (error) {
+      console.error("Chyba při odesílání ověřovacího e-mailu:", error);
+      setMessage("Chyba při odesílání ověřovacího e-mailu. Zkuste to znovu.");
     }
   };
 
@@ -77,13 +80,9 @@ const Login = ({ onLoginSuccess }) => {
                   <h1>Přihlášení</h1>
                   <p className="text-body-secondary">Přihlašte se prosím.</p>
 
-                  {/* 🔹 Zobrazení chybové zprávy */}
-                  {errorMessage && <CAlert color="danger">{errorMessage}</CAlert>}
-                  
-                  {/* 🔹 Zobrazení úspěšné zprávy */}
-                  {successMessage && <CAlert color="success">{successMessage}</CAlert>}
+                  {/* Zobrazení hlášek přímo v UI */}
+                  {message && <CAlert color="info">{message}</CAlert>}
 
-                  {/* EMAIL */}
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
                       <CIcon icon={cilUser} />
@@ -97,7 +96,6 @@ const Login = ({ onLoginSuccess }) => {
                     />
                   </CInputGroup>
 
-                  {/* HESLO */}
                   <CInputGroup className="mb-4">
                     <CInputGroupText>
                       <CIcon icon={cilLockLocked} />
@@ -115,15 +113,11 @@ const Login = ({ onLoginSuccess }) => {
                     Přihlásit
                   </CButton>
 
-                  {/* 🔹 Tlačítko pro reset hesla */}
-                  <div className="mt-3 text-center">
-                    <CButton color="link" className="px-0" onClick={handleForgotPassword}>
-                      Zapomenuté heslo?
-                    </CButton>
-                  </div>
-
-                  <div className="mt-3 text-center">
-                  V případě, že nemáte registraci do našeho systému, zaregistrujte se prosím emailem, kterým s námi komunikujete. <Link to="/register">Registrovat</Link>
+                  <div className="mt-4 text-center">
+                    <p>
+                      V případě, že nemáte registraci do našeho systému, zaregistrujte se prosím
+                      emailem, kterým s námi komunikujete. <Link to="/register">Registrovat</Link>
+                    </p>
                   </div>
                 </CForm>
               </CCardBody>
