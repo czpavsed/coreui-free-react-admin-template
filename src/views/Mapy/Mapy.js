@@ -137,7 +137,7 @@ const Mapy = () => {
             <CTableHead color="light">
               <CTableRow>
                 <CTableHeaderCell>Název mapy</CTableHeaderCell>
-                <CTableHeaderCell>Datum vytvoření</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Datum vytvoření</CTableHeaderCell>
                 <CTableHeaderCell>Stáhnout PDF</CTableHeaderCell>
                 <CTableHeaderCell>Zobrazit PDF</CTableHeaderCell>
               </CTableRow>
@@ -146,7 +146,7 @@ const Mapy = () => {
               {maps.map((map) => (
                 <CTableRow key={map.MapaId}>
                   <CTableDataCell>{map.Nazev}</CTableDataCell>
-                  <CTableDataCell>{formatDate(map.CreateDate)}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{formatDate(map.CreateDate)}</CTableDataCell>
                   <CTableDataCell>
                     <CButton
                       color="success"

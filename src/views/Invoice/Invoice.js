@@ -97,10 +97,10 @@ const Invoice = () => {
               <CTableRow>
                 <CTableHeaderCell>Číslo faktury</CTableHeaderCell>
                 <CTableHeaderCell className="d-none d-sm-table-cell">Zákazník</CTableHeaderCell>
-                <CTableHeaderCell>Datum vystavení</CTableHeaderCell>
-                <CTableHeaderCell>Celková částka</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Datum vystavení</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Celková částka</CTableHeaderCell>
                 <CTableHeaderCell>Stav</CTableHeaderCell>
-                <CTableHeaderCell>Stáhnout PDF</CTableHeaderCell>
+                <CTableHeaderCell>Stáhnout</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
@@ -109,15 +109,15 @@ const Invoice = () => {
                   <CTableRow key={invoice.id}>
                     <CTableDataCell>{invoice.number}</CTableDataCell>
                     <CTableDataCell className="d-none d-sm-table-cell">{invoice.customer_name}</CTableDataCell>
-                    <CTableDataCell>{formatDate(invoice.date_created)}</CTableDataCell>
-                    <CTableDataCell>{formatCurrency(invoice.total, invoice.currency)}</CTableDataCell>
+                    <CTableDataCell className="d-none d-sm-table-cell">{formatDate(invoice.date_created)}</CTableDataCell>
+                    <CTableDataCell className="d-none d-sm-table-cell">{formatCurrency(invoice.total, invoice.currency)}</CTableDataCell>
                     <CTableDataCell>{isPaid(invoice.date_paid)}</CTableDataCell>
                     <CTableDataCell>
                       <CButton
                         color="success"
                         onClick={() => window.open(invoice.url_download_pdf, '_blank')}
                       >
-                        Stáhnout PDF
+                        Stáhnout
                       </CButton>
                     </CTableDataCell>
                   </CTableRow>

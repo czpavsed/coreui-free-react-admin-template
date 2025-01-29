@@ -244,9 +244,9 @@ const Checkpoints = () => {
                 <CTableRow>
                   <CTableHeaderCell>Stanička</CTableHeaderCell>
                   <CTableHeaderCell>Umístění</CTableHeaderCell>
-                  <CTableHeaderCell>Služba</CTableHeaderCell>
-                  <CTableHeaderCell>Nástraha</CTableHeaderCell>
-                  <CTableHeaderCell>Limit</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Služba</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Nástraha</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Limit</CTableHeaderCell>
                   <CTableHeaderCell>Akce</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -256,9 +256,9 @@ const Checkpoints = () => {
                     <CTableRow key={index}>
                       <CTableDataCell>{item.Číslo_staničky} {item.Označení_staničky && `(${item.Označení_staničky})`}</CTableDataCell>
                       <CTableDataCell>{item.Umistění}</CTableDataCell>
-                      <CTableDataCell>{item.Služba}</CTableDataCell>
-                      <CTableDataCell>{item.Nástraha}</CTableDataCell>
-                      <CTableDataCell>{item.Target} {item.Vyhodnocení_jednotka}</CTableDataCell>
+                      <CTableDataCell className="d-none d-sm-table-cell">{item.Služba}</CTableDataCell>
+                      <CTableDataCell className="d-none d-sm-table-cell">{item.Nástraha}</CTableDataCell>
+                      <CTableDataCell className="d-none d-sm-table-cell">{item.Target} {item.Vyhodnocení_jednotka}</CTableDataCell>
                       <CTableDataCell>
                         <CButton color="info" size="sm" onClick={() => handleShowTrend(item)}>
                           Zobrazit trend
@@ -285,7 +285,7 @@ const Checkpoints = () => {
           <CModalTitle>Trend - {selectedCheckpoint?.Služba}</CModalTitle>
         </CModalHeader>
         <CModalBody>
-          {trendLoading ? <CSpinner /> : trendError ? <p style={{ color: 'red' }}>{trendError}</p> : <CChartLine data={dataForChart} options={optionsForChart} style={{ height: '400px' }} />}
+          {trendLoading ? <CSpinner /> : trendError ? <p style={{ color: 'red' }}>{trendError}</p> : <CChartLine data={dataForChart} options={optionsForChart} />}
         </CModalBody>
       </CModal>
     </CCard>

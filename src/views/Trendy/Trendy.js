@@ -134,20 +134,20 @@ const Trendy = () => {
             <CTableHead color="light">
               <CTableRow>
                 <CTableHeaderCell>Datum</CTableHeaderCell>
-                <CTableHeaderCell>Typ kontroly</CTableHeaderCell>
-                <CTableHeaderCell>Technik</CTableHeaderCell>
-                <CTableHeaderCell>Poznámka</CTableHeaderCell>
-                <CTableHeaderCell>Stáhnout PDF</CTableHeaderCell>
-                <CTableHeaderCell>Zobrazit PDF</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Typ kontroly</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Technik</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Poznámka</CTableHeaderCell>
+                <CTableHeaderCell>Stáhnout</CTableHeaderCell>
+                <CTableHeaderCell>Zobrazit</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
               {trendy.map((trend) => (
                 <CTableRow key={trend.ID}>
                   <CTableDataCell>{formatDate(trend.Datum)}</CTableDataCell>
-                  <CTableDataCell>{trend.Typ_kontroly}</CTableDataCell>
-                  <CTableDataCell>{`${trend.Jmeno} ${trend.Prijmeni}`}</CTableDataCell>
-                  <CTableDataCell>{trend.Poznámka || '—'}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{trend.Typ_kontroly}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{`${trend.Jmeno} ${trend.Prijmeni}`}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{trend.Poznámka || '—'}</CTableDataCell>
                   <CTableDataCell>
                     <CButton
                       color="success"

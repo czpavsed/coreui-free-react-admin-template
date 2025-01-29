@@ -104,11 +104,18 @@ const Dashboard = () => {
               <CCol sm={6}>
                 <CCard textBgColor="primary" className={`mb-3 border-${item.Color}`}>
                   <CCardHeader>Technik:</CCardHeader>
-                  <CCardBody>
-                    <CCardTitle>
-                      {item.Jmeno} {item.Prijmeni}
-                    </CCardTitle>
-                    <CCardText>Tel: {item.Telefon}</CCardText>
+                  <CCardBody className="d-flex align-items-center">
+                    <img
+                      src={`src/assets/images/${item.Jmeno}.jpg`}
+                      alt={`${item.Jmeno} ${item.Prijmeni}`}
+                      style={{ width: '15%', borderRadius: '10px', marginRight: '10px' }}
+                    />
+                    <div>
+                      <CCardTitle>
+                        {item.Jmeno} {item.Prijmeni}
+                      </CCardTitle>
+                      <CCardText>Tel: {item.Telefon}</CCardText>
+                    </div>
                   </CCardBody>
                 </CCard>
               </CCol>

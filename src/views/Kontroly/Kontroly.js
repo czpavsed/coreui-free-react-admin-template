@@ -127,20 +127,20 @@ const Kontroly = () => {
             <CTableHead color="light">
               <CTableRow>
                 <CTableHeaderCell>Datum</CTableHeaderCell>
-                <CTableHeaderCell>Typ kontroly</CTableHeaderCell>
-                <CTableHeaderCell>Technik</CTableHeaderCell>
-                <CTableHeaderCell>Poznámka</CTableHeaderCell>
-                <CTableHeaderCell>Stáhnout PDF</CTableHeaderCell>
-                <CTableHeaderCell>Zobrazit PDF</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Typ kontroly</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Technik</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Poznámka</CTableHeaderCell>
+                <CTableHeaderCell>Stáhnout</CTableHeaderCell>
+                <CTableHeaderCell>Zobrazit</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
               {inspections.map((inspection) => (
                 <CTableRow key={inspection.ID}>
                   <CTableDataCell>{formatDate(inspection.Datum)}</CTableDataCell>
-                  <CTableDataCell>{inspection.Typ_kontroly}</CTableDataCell>
-                  <CTableDataCell>{`${inspection.Jmeno} ${inspection.Prijmeni}`}</CTableDataCell>
-                  <CTableDataCell>{inspection.Poznámka || '—'}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{inspection.Typ_kontroly}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{`${inspection.Jmeno} ${inspection.Prijmeni}`}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{inspection.Poznámka || '—'}</CTableDataCell>
                   <CTableDataCell>
                     <CButton
                       color="success"

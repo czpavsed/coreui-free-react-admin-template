@@ -19,7 +19,7 @@
   
   @media (max-width: 768px) {
     .login-logo {
-      max-width: 100px;
+      max-width: 120px;
       top: 10px;
       left: 10px;
     }
@@ -30,4 +30,19 @@
     backdrop-filter: blur(2px);
     border-radius: 15px;
   }
-  
+
+  .px-4 {
+    padding-right: 0.5rem !important;
+    padding-left: 0.5rem !important;
+}
+
+@media (max-width: 768px) {
+  .row > * {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    padding-right: calc(var(--cui-gutter-x)* 0.1);
+    padding-left: calc(var(--cui-gutter-x)* 0.1);
+    margin-top: var(--cui-gutter-y);
+} 
+}

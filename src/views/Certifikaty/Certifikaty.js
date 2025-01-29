@@ -171,8 +171,8 @@ const Certifikaty = () => {
               <CTableHead color="light">
                 <CTableRow>
                   <CTableHeaderCell>Název</CTableHeaderCell>
-                  <CTableHeaderCell>Typ</CTableHeaderCell>
-                  <CTableHeaderCell>Platnost do</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Typ</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Platnost do</CTableHeaderCell>
                   <CTableHeaderCell>Ke stažení</CTableHeaderCell>
                   <CTableHeaderCell>Zobrazit</CTableHeaderCell>
                 </CTableRow>
@@ -182,18 +182,18 @@ const Certifikaty = () => {
                   filteredCertifikaty.map((cert) => (
                     <CTableRow key={cert.CertifikatId}>
                       <CTableDataCell>{cert.Nazev}</CTableDataCell>
-                      <CTableDataCell>{cert.Typ}</CTableDataCell>
-                      <CTableDataCell style={{ color: isExpired(cert.PlatnostDo) ? 'red' : 'inherit' }}>
+                      <CTableDataCell className="d-none d-sm-table-cell">{cert.Typ}</CTableDataCell>
+                      <CTableDataCell style={{ color: isExpired(cert.PlatnostDo) ? 'red' : 'inherit' }} className="d-none d-sm-table-cell">
                         {formatDate(cert.PlatnostDo)}
                       </CTableDataCell>
                       <CTableDataCell>
                         <CButton color="success" onClick={() => downloadFile(cert.url)}>
-                          Stáhnout PDF
+                          Stáhnout
                         </CButton>
                       </CTableDataCell>
                       <CTableDataCell>
                         <CButton color="info" onClick={() => handleViewPdf(cert.url)}>
-                          Zobrazit PDF
+                          Zobrazit
                         </CButton>
                       </CTableDataCell>
                     </CTableRow>

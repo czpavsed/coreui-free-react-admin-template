@@ -176,8 +176,8 @@ const TrendyDetail = () => {
               <CTableHead color="light">
                 <CTableRow>
                   <CTableHeaderCell>Datum zásahu</CTableHeaderCell>
-                  <CTableHeaderCell>Stav</CTableHeaderCell>
-                  <CTableHeaderCell>Limit</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Stav</CTableHeaderCell>
+                  <CTableHeaderCell className="d-none d-sm-table-cell">Limit</CTableHeaderCell>
                   <CTableHeaderCell>Komentář</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -186,10 +186,10 @@ const TrendyDetail = () => {
                   filteredData.map((item) => (
                     <CTableRow key={`${item.Year}-${item.Month}`}>
                       <CTableDataCell>{formatDate(item.DatumZasahu)}</CTableDataCell>
-                      <CTableDataCell>
+                      <CTableDataCell className="d-none d-sm-table-cell">
                         {item.MaxStav} {item.Vyhodnocení_jednotka}
                       </CTableDataCell>
-                      <CTableDataCell>
+                      <CTableDataCell className="d-none d-sm-table-cell">
                         {item.MaxTarget} {item.Vyhodnocení_jednotka}
                       </CTableDataCell>
                       <CTableDataCell>{item.Komentar || '—'}</CTableDataCell>
