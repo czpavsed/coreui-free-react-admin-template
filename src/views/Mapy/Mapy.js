@@ -46,7 +46,7 @@ const Mapy = () => {
         setMaps(response.data);
       } catch (error) {
         console.error('Chyba při načítání map:', error);
-        setError('Nepodařilo se načíst data pro mapy.' ${API_ACCESS_KEY});
+        setError('Nepodařilo se načíst data pro mapy.');
       } finally {
         setLoading(false);
       }
@@ -122,7 +122,7 @@ const Mapy = () => {
 
   return (
     <CCard className="mb-4">
-      <CCardHeader>Přehled map</CCardHeader>
+      <CCardHeader>Přehled map ${API_ACCESS_KEY}</CCardHeader>
       <CCardBody>
         {loading ? (
           <div className="text-center">
