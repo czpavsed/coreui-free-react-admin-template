@@ -138,8 +138,9 @@ const Mapy = () => {
               <CTableRow>
                 <CTableHeaderCell>Název mapy</CTableHeaderCell>
                 <CTableHeaderCell className="d-none d-sm-table-cell">Datum vytvoření</CTableHeaderCell>
-                <CTableHeaderCell>Stáhnout PDF</CTableHeaderCell>
-                <CTableHeaderCell>Zobrazit PDF</CTableHeaderCell>
+                <CTableHeaderCell className="d-none d-sm-table-cell">Datum revize</CTableHeaderCell>
+                <CTableHeaderCell>Stáhnout</CTableHeaderCell>
+                <CTableHeaderCell>Zobrazit</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
             <CTableBody>
@@ -147,6 +148,7 @@ const Mapy = () => {
                 <CTableRow key={map.MapaId}>
                   <CTableDataCell>{map.Nazev}</CTableDataCell>
                   <CTableDataCell className="d-none d-sm-table-cell">{formatDate(map.CreateDate)}</CTableDataCell>
+                  <CTableDataCell className="d-none d-sm-table-cell">{formatDate(map.ChangedDate)}</CTableDataCell>
                   <CTableDataCell>
                     <CButton
                       color="success"

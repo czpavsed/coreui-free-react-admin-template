@@ -187,6 +187,20 @@ const Checkpoints = () => {
       <CCardHeader>Přehled kontrolních bodů</CCardHeader>
       <CCardBody>
         <CRow className="mb-3">
+        <CCol xs={4}>
+            <CFormSelect
+              value={selectedObject}
+              onChange={(e) => setSelectedObject(e.target.value)}
+              aria-label="Vyberte objekt"
+            >
+              <option value="">Všechny objekty</option>
+              {objects.map((object, index) => (
+                <option key={index} value={object}>
+                  {object}
+                </option>
+              ))}
+            </CFormSelect>
+          </CCol>
           <CCol xs={4}>
             <CFormSelect
               value={selectedService}
@@ -197,20 +211,6 @@ const Checkpoints = () => {
               {services.map((service, index) => (
                 <option key={index} value={service}>
                   {service}
-                </option>
-              ))}
-            </CFormSelect>
-          </CCol>
-          <CCol xs={4}>
-            <CFormSelect
-              value={selectedObject}
-              onChange={(e) => setSelectedObject(e.target.value)}
-              aria-label="Vyberte objekt"
-            >
-              <option value="">Všechny objekty</option>
-              {objects.map((object, index) => (
-                <option key={index} value={object}>
-                  {object}
                 </option>
               ))}
             </CFormSelect>

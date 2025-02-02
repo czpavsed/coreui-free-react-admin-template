@@ -9,6 +9,14 @@ import {
   cilNotes,
   cilTask,
   cilShieldAlt,
+  cilPaintBucket,
+  cilObjectGroup,
+  cilHandPointDown,
+  cilCheckCircle,
+  cilCheck,
+  cilMap,
+  cilLocationPin,
+  cilFlagAlt,
 } from '@coreui/icons'
 import { CNavTitle, CNavItem } from '@coreui/react'
 
@@ -42,7 +50,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Trendy grafy',
+    name: 'Vývojové trendy',
     to: '/TrendyDetail',
     icon: <CIcon icon={cilChartLine} customClassName="nav-icon" />, // Ikona pro Trendy Detail
   },
@@ -50,7 +58,7 @@ const _nav = [
     component: CNavItem,
     name: 'Kontrolní body',
     to: '/StanickyDetail',
-    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />, // Ikona pro Trendy Detail
+    icon: <CIcon icon={cilFlagAlt} customClassName="nav-icon" />, // Ikona pro Trendy Detail
   },
 
   // ✅ Harmonogram
@@ -64,7 +72,7 @@ const _nav = [
     component: CNavItem,
     name: 'Mapy umístění bodů',
     to: '/Mapy',
-    icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />, // Ikona pro Harmonogram
+    icon: <CIcon icon={cilLocationPin} customClassName="nav-icon" />, // Ikona pro Harmonogram
   },
 
   // ✅ Faktury a dokumenty

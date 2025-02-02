@@ -168,6 +168,23 @@ const TrendyDetail = () => {
                   legend: {
                     position: 'bottom',
                   },
+                  tooltip: {
+                    callbacks: {
+                      label: function (tooltipItem) {
+                        const index = tooltipItem.dataIndex
+                        const datasetLabel = tooltipItem.dataset.label || ''
+                        const value = tooltipItem.raw
+                        const koment = filteredData[index]?.Komentar || ''
+                  
+                        if (tooltipItem.datasetIndex === 0 && koment) {
+                          return `${datasetLabel}: ${value} - ${koment}`
+                        }
+                  
+                        return `${datasetLabel}: ${value}`
+                      },
+                    },
+                  },
+                  
                 },
               }}
               style={{ height: '400px', marginBottom: '30px' }}
@@ -176,8 +193,8 @@ const TrendyDetail = () => {
               <CTableHead color="light">
                 <CTableRow>
                   <CTableHeaderCell>Datum zásahu</CTableHeaderCell>
-                  <CTableHeaderCell className="d-none d-sm-table-cell">Stav</CTableHeaderCell>
-                  <CTableHeaderCell className="d-none d-sm-table-cell">Limit</CTableHeaderCell>
+                  <CTableHeaderCell>Stav</CTableHeaderCell>
+                  <CTableHeaderCell>Limit</CTableHeaderCell>
                   <CTableHeaderCell>Komentář</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -186,12 +203,8 @@ const TrendyDetail = () => {
                   filteredData.map((item) => (
                     <CTableRow key={`${item.Year}-${item.Month}`}>
                       <CTableDataCell>{formatDate(item.DatumZasahu)}</CTableDataCell>
-                      <CTableDataCell className="d-none d-sm-table-cell">
-                        {item.MaxStav} {item.Vyhodnocení_jednotka}
-                      </CTableDataCell>
-                      <CTableDataCell className="d-none d-sm-table-cell">
-                        {item.MaxTarget} {item.Vyhodnocení_jednotka}
-                      </CTableDataCell>
+                      <CTableDataCell>{item.MaxStav} {item.Vyhodnocení_jednotka}</CTableDataCell>
+                      <CTableDataCell>{item.MaxTarget} {item.Vyhodnocení_jednotka}</CTableDataCell>
                       <CTableDataCell>{item.Komentar || '—'}</CTableDataCell>
                     </CTableRow>
                   ))
