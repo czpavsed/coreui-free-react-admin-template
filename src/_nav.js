@@ -17,6 +17,8 @@ import {
   cilMap,
   cilLocationPin,
   cilFlagAlt,
+  cilCode,
+  cilLightbulb,
 } from '@coreui/icons'
 import { CNavTitle, CNavItem } from '@coreui/react'
 
@@ -73,6 +75,12 @@ const _nav = [
     name: 'Mapy umístění bodů',
     to: '/Mapy',
     icon: <CIcon icon={cilLocationPin} customClassName="nav-icon" />, // Ikona pro Harmonogram
+  },
+  {
+    component: CNavItem,
+    name: 'TrendAnalysis',
+    to: '/TrendAnalysis',
+    icon: <CIcon icon={cilLightbulb} customClassName="nav-icon" />,
   },
 
   // ✅ Faktury a dokumenty

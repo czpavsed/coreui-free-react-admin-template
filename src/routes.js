@@ -12,6 +12,7 @@ const TrendyDetail = React.lazy(() => import('./views/TrendyDetail/TrendyDetail'
 const Harmonogram = React.lazy(() => import('./views/Harmonogram/Harmonogram'))
 const StanickyDetail = React.lazy(() => import('./views/StanickyDetail/StanickyDetail'))
 const Mapy = React.lazy(() => import('./views/Mapy/Mapy'))
+const TrendAnalysis = React.lazy(() => import('./views/TrendAnalysis/TrendAnalysis'))
 
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
@@ -71,7 +72,8 @@ const routes = [
   { path: '/TrendyDetail', name: 'Trendy grafy', element: TrendyDetail },
   { path: '/Certifikaty', name: 'Certifikaty', element: Certifikaty },
   { path: '/Harmonogram', name: 'Harmonogram', element: Harmonogram },
-  { path: '/StanickyDetail', name: 'Kontrolni body ', element: StanickyDetail },
+  { path: '/StanickyDetail', name: 'Kontrolni body', element: StanickyDetail },
+  { path: '/TrendAnalysis', name: 'TrendAnalysis', element: TrendAnalysis },
   { path: '/Mapy', name: 'Mapy umístění bodů ', element: Mapy },
   { path: '/base', name: 'Base', element: Cards, exact: true },
   { path: '/base/accordion', name: 'Accordion', element: Accordion },
