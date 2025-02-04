@@ -78,7 +78,7 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'TrendAnalysis',
+    name: 'AI Analýza',
     to: '/TrendAnalysis',
     icon: <CIcon icon={cilLightbulb} customClassName="nav-icon" />,
   },
