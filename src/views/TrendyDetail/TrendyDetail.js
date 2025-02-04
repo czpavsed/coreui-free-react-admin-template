@@ -193,8 +193,8 @@ const TrendyDetail = () => {
               <CTableHead color="light">
                 <CTableRow>
                   <CTableHeaderCell>Datum zásahu</CTableHeaderCell>
-                  <CTableHeaderCell>Max. Stav</CTableHeaderCell>
-                  <CTableHeaderCell>Průměrný Stav</CTableHeaderCell>
+                  <CTableHeaderCell>Max. {item.Pozer_Zachyt}</CTableHeaderCell>
+                  <CTableHeaderCell>Průměr {item.Pozer_Zachyt}</CTableHeaderCell>
                   <CTableHeaderCell>Počet bodů</CTableHeaderCell>
                   <CTableHeaderCell>Limit</CTableHeaderCell>
                   <CTableHeaderCell>Komentář</CTableHeaderCell>
