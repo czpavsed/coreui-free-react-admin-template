@@ -99,13 +99,21 @@ const TrendyDetail = () => {
         data: filteredData.map((item) => item.MaxStav),
       },
       {
+        label: `Průměr`,
+        backgroundColor: `rgba(${getStyle('--cui-warning-rgb')}, .1)`,
+        borderColor: getStyle('--cui-warning'),
+        pointHoverBackgroundColor: getStyle('--cui-warning'),
+        borderWidth: 2,
+        data: filteredData.map((item) => item.AvgStav),
+      },
+      {
         label: `Limit`,
         backgroundColor: `rgba(${getStyle('--cui-success-rgb')}, .1)`,
         borderColor: getStyle('--cui-success'),
         pointHoverBackgroundColor: getStyle('--cui-success'),
         borderWidth: 2,
         data: filteredData.map((item) => item.MaxTarget),
-      },
+      }
     ],
   }
 
