@@ -193,7 +193,9 @@ const TrendyDetail = () => {
               <CTableHead color="light">
                 <CTableRow>
                   <CTableHeaderCell>Datum zásahu</CTableHeaderCell>
-                  <CTableHeaderCell>Stav</CTableHeaderCell>
+                  <CTableHeaderCell>Max. Stav</CTableHeaderCell>
+                  <CTableHeaderCell>Průměrný Stav</CTableHeaderCell>
+                  <CTableHeaderCell>Počet bodů</CTableHeaderCell>
                   <CTableHeaderCell>Limit</CTableHeaderCell>
                   <CTableHeaderCell>Komentář</CTableHeaderCell>
                 </CTableRow>
@@ -204,6 +206,8 @@ const TrendyDetail = () => {
                     <CTableRow key={`${item.Year}-${item.Month}`}>
                       <CTableDataCell>{formatDate(item.DatumZasahu)}</CTableDataCell>
                       <CTableDataCell>{item.MaxStav} {item.Vyhodnocení_jednotka}</CTableDataCell>
+                      <CTableDataCell>{item.AvgStav} {item.Vyhodnocení_jednotka}</CTableDataCell>
+                      <CTableDataCell>{item.PocetStanicek}</CTableDataCell>
                       <CTableDataCell>{item.MaxTarget} {item.Vyhodnocení_jednotka}</CTableDataCell>
                       <CTableDataCell>{item.Komentar || '—'}</CTableDataCell>
                     </CTableRow>
