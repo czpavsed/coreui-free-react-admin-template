@@ -43,11 +43,11 @@ const TrendAnalysis = () => {
       <CCardHeader>
         <CRow>
           <CCol xs={8}>
-            <h5>Analýza Trendů</h5>
+            <h5>📊 Analýza Trendů</h5>
           </CCol>
           <CCol xs={4} className="text-end">
             <CButton color="primary" onClick={fetchAnalysis} disabled={loading}>
-              {loading ? <CSpinner size="sm" /> : "Spustit analýzu"}
+              {loading ? <CSpinner size="sm" /> : "🔍 Spustit analýzu"}
             </CButton>
           </CCol>
         </CRow>
@@ -56,6 +56,7 @@ const TrendAnalysis = () => {
       <CCardBody>
         {loading && (
           <div className="text-center">
+            <CSpinner />
             <p>Načítám analýzu trendů...</p>
           </div>
         )}
