@@ -41,7 +41,7 @@ const TrendChart = ({ trendData }) => {
               data: sortedServiceData.map((item) => item.MaxStav),
             },
             {
-              label: `Limit - ${maxLimit} ${vyhodnoceniJednotka}`,
+              label: `Limit`,
               backgroundColor: `rgba(${getStyle('--cui-success-rgb')}, .1)`,
               borderColor: getStyle('--cui-success'),
               pointHoverBackgroundColor: getStyle('--cui-success'),
@@ -65,26 +65,26 @@ const TrendChart = ({ trendData }) => {
                   scales: {
                     x: {
                       grid: {
-                        display: false, // Skryje mřížkové čáry osy X
+                        display: false,
                       },
                       ticks: {
-                        display: false, // Skryje popisky osy X
+                        display: false,
                       },
                       border: {
-                        display: true, // Zobrazí osu X
-                        color: getStyle('--cui-gray-500'), // Nastaví barvu osy X
+                        display: true,
+                        color: getStyle('--cui-gray-500'),
                       },
                     },
                     y: {
                       grid: {
-                        display: false, // Skryje mřížkové čáry osy Y
+                        display: false,
                       },
                       ticks: {
-                        display: false, // Skryje popisky osy Y
+                        display: false,
                       },
                       border: {
-                        display: true, // Zobrazí osu Y
-                        color: getStyle('--cui-gray-500'), // Nastaví barvu osy Y
+                        display: true,
+                        color: getStyle('--cui-gray-500'),
                       },
                       min: 0,
                       beginAtZero: true,
@@ -95,7 +95,13 @@ const TrendChart = ({ trendData }) => {
                       position: 'bottom',
                     },
                     tooltip: {
-                      enabled: false,
+                      callbacks: {
+                        label: function (tooltipItem) {
+                          const datasetLabel = tooltipItem.dataset.label
+                          const value = tooltipItem.raw
+                          return `${datasetLabel}: ${value} ${vyhodnoceniJednotka}`
+                        },
+                      },
                     },
                   },
                 }}

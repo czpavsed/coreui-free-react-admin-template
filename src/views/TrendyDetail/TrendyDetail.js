@@ -14,6 +14,10 @@ import {
   CTableHeaderCell,
   CTableRow,
   CSpinner,
+  CAccordion,
+  CAccordionItem,
+  CAccordionHeader,
+  CAccordionBody,
 } from '@coreui/react'
 import { UserContext } from './../../components/UserContext';
 import { CChartLine } from '@coreui/react-chartjs'
@@ -182,21 +186,39 @@ const TrendyDetail = () => {
                         const index = tooltipItem.dataIndex
                         const datasetLabel = tooltipItem.dataset.label || ''
                         const value = tooltipItem.raw
+                        const jednotka = yAxisUnit ? ` ${yAxisUnit}` : ''
                         const koment = filteredData[index]?.Komentar || ''
                   
                         if (tooltipItem.datasetIndex === 0 && koment) {
-                          return `${datasetLabel}: ${value} - ${koment}`
+                          return `${datasetLabel}: ${value}${jednotka} - ${koment}`
                         }
                   
-                        return `${datasetLabel}: ${value}`
+                        return `${datasetLabel}: ${value}${jednotka}`
                       },
                     },
                   },
+
                   
                 },
               }}
               style={{ height: '400px', marginBottom: '30px' }}
             />
+            <CAccordion activeItemKey={2} color="light">
+              <CAccordionItem itemKey={1}>
+                <CAccordionHeader>
+                  Vysvětlení zobrazení maximální a průměrné hodnoty požeru/záchytu
+                </CAccordionHeader>
+                <CAccordionBody>
+                  <p>V přehledu zobrazujeme dvě klíčové hodnoty – <strong>maximální</strong> a <strong>průměrnou</strong> hodnotu požeru/záchytu v rámci dané služby.</p>
+                  <h6><strong>Proč zobrazujeme maximální hodnotu?</strong></h6>
+                  <p>Maximální hodnota identifikuje kontrolní bod s nejvyšším požerem nebo záchytem, což je důležité pro včasnou reakci. Překročení povolených limitů vyžaduje nápravná opatření. Pouze sledování průměru by mohlo vést k přehlédnutí kritických bodů.</p>
+                  <h6><strong>Proč zobrazujeme průměrnou hodnotu?</strong></h6>
+                  <p>Průměrná hodnota poskytuje obecný přehled o celkovém trendu a umožňuje dlouhodobé vyhodnocení účinnosti opatření.</p>
+                  <p>Kombinace těchto dvou hodnot zajišťuje <strong>komplexní pohled</strong> na situaci – průměr ukazuje celkový stav v dané oblasti a maximum upozorňuje na místa s potenciálním rizikem.</p>
+                </CAccordionBody>
+              </CAccordionItem>
+            </CAccordion>
+            <br></br>
             <CTable hover responsive>
               <CTableHead color="light">
                 <CTableRow>
