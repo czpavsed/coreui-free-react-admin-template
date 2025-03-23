@@ -11,12 +11,14 @@ import {
   CTableHeaderCell,
   CTableRow,
   CButton,
-  CSpinner
+  CSpinner,
+  CFormSelect,
+  CRow,
+  CCol
 } from '@coreui/react';
 import { UserContext } from './../../components/UserContext';
 import PDFViewer from './PDFViewer';
 
-// Načtení API klíče z .env souboru pro Vite
 const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
@@ -26,8 +28,8 @@ const SafetyLists = () => {
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedFilter, setSelectedFilter] = useState('in_use'); // "in_use" nebo "all"
 
-  // Načtení bezpečnostních listů
   useEffect(() => {
     const fetchSafetyLists = async () => {
       if (!zakaznikId) {
@@ -37,10 +39,15 @@ const SafetyLists = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}safety-list`, {
+        const endpoint =
+          selectedFilter === 'in_use'
+            ? `${API_BASE_URL}safety-list_in_use`
+            : `${API_BASE_URL}safety-list`;
+
+        const response = await axios.get(endpoint, {
           params: { zakaznikId },
           headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
+            Authorization: `Bearer ${API_ACCESS_KEY}`,
           },
         });
         setSafetyLists(response.data);
@@ -53,58 +60,73 @@ const SafetyLists = () => {
     };
 
     fetchSafetyLists();
-  }, [zakaznikId]);
+  }, [zakaznikId, selectedFilter]);
 
-  // Funkce pro stažení souboru
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get(`${API_BASE_URL}download`, {
-      params: { blobName, type: 'download' },
-      responseType: 'blob'
-    })
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${blobName.split('/').pop()}`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    })
-    .catch(error => {
-      console.error('Chyba při stahování souboru:', error);
-    });
+    axios
+      .get(`${API_BASE_URL}download`, {
+        params: { blobName, type: 'download' },
+        responseType: 'blob',
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${blobName.split('/').pop()}`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error('Chyba při stahování souboru:', error);
+      });
   };
 
-  // Funkce pro zobrazení PDF
   const handleViewPdf = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get(`${API_BASE_URL}download`, {
-      params: { blobName, type: 'view' }
-    })
-    .then(response => {
-      setSelectedPdfUrl(response.data.url);
-    })
-    .catch(error => {
-      console.error('Chyba při generování odkazu na PDF:', error);
-    });
+    axios
+      .get(`${API_BASE_URL}download`, {
+        params: { blobName, type: 'view' },
+      })
+      .then((response) => {
+        setSelectedPdfUrl(response.data.url);
+      })
+      .catch((error) => {
+        console.error('Chyba při generování odkazu na PDF:', error);
+      });
   };
 
   const handleBackToList = () => {
     setSelectedPdfUrl(null);
   };
 
-  // Pokud je otevřený PDF Viewer
   if (selectedPdfUrl) {
     return <PDFViewer pdfUrl={selectedPdfUrl} onBack={handleBackToList} />;
   }
 
   return (
     <CCard className="mb-4">
-      <CCardHeader>Bezpečnostní listy</CCardHeader>
+      <CCardHeader>
+        <CRow>
+          <CCol xs={6}>
+            <strong>Bezpečnostní listy</strong>
+          </CCol>
+          <CCol xs={6}>
+            <CFormSelect
+              value={selectedFilter}
+              onChange={(e) => setSelectedFilter(e.target.value)}
+              aria-label="Filtr bezpečnostních listů"
+            >
+              <option value="in_use">Použité bezpečnostní listy</option>
+              <option value="all">Všechny bezpečnostní listy</option>
+            </CFormSelect>
+          </CCol>
+        </CRow>
+      </CCardHeader>
       <CCardBody>
         {loading ? (
           <div className="text-center">
