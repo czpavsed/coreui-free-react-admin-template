@@ -5,6 +5,7 @@ const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
 const Invoice = React.lazy(() => import('./views/Invoice/Invoice'))
 const Kontroly = React.lazy(() => import('./views/Kontroly/Kontroly'))
+const Neshody = React.lazy(() => import('./views/Neshody/Neshody'))
 const Trendy = React.lazy(() => import('./views/Trendy/Trendy'))
 const SafetyLists = React.lazy(() => import('./views/SafetyLists/SafetyLists'))
 const Certifikaty = React.lazy(() => import('./views/Certifikaty/Certifikaty'))
@@ -67,6 +68,7 @@ const routes = [
   { path: '/theme/colors', name: 'Colors', element: Colors },
   { path: '/Invoice', name: 'Faktury', element: Invoice },
   { path: '/Kontroly', name: 'Vyhodnocení kontrol', element: Kontroly },
+  { path: '/Neshody', name: 'Neshody', element: Neshody },
   { path: '/Trendy', name: 'Roční trendy', element: Trendy },
   { path: '/SafetyLists', name: 'Bezpečnostní listy', element: SafetyLists },
   { path: '/TrendyDetail', name: 'Trendy grafy', element: TrendyDetail },

@@ -19,6 +19,7 @@ import {
   cilFlagAlt,
   cilCode,
   cilLightbulb,
+  cilEnvelopeClosed,
 } from '@coreui/icons'
 import { CNavTitle, CNavItem } from '@coreui/react'
 
@@ -43,6 +44,12 @@ const _nav = [
     name: 'Vyhodnocení kontrol',
     to: '/Kontroly',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />, // Ikona pro Kontroly
+  },
+  {
+    component: CNavItem,
+    name: 'Neshody', 
+    to: '/Neshody',
+    icon: <CIcon icon={cilEnvelopeClosed} customClassName="nav-icon" />, // Ikona pro Kontroly
   },
   {
     component: CNavItem,
