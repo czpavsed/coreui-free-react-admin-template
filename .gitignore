@@ -11,6 +11,7 @@ yarn.lock
 /build
 
 # misc
+.node_modules
 .eslintcache
 .DS_Store
 .idea
