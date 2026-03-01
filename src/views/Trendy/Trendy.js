@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import axios from 'axios'
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -18,10 +18,6 @@ import PDFViewer from './PDFViewer'
 import { cilCloudDownload, cilMagnifyingGlass } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
-// Načtení API klíče z .env souboru pro Vite
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
-
 const Trendy = () => {
   const { zakaznikId } = useContext(UserContext)
   const [trendy, setTrendy] = useState([])
@@ -39,11 +35,8 @@ const Trendy = () => {
 
       setLoading(true)
       try {
-        const response = await axios.get(`${API_BASE_URL}inspections`, {
+        const response = await api.get('inspections', {
           params: { zakaznikId },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         })
         
         // Filtrování pouze trendů s vyplněnou URL adresou
@@ -65,10 +58,11 @@ const Trendy = () => {
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '')
 
-    axios.get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
       params: { blobName, type: 'download' },
       responseType: 'blob',
-    })
+      })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
@@ -88,9 +82,10 @@ const Trendy = () => {
   const handleViewPdf = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '')
 
-    axios.get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
       params: { blobName, type: 'view' },
-    })
+      })
       .then((response) => {
         setSelectedPdfUrl(response.data.url)
       })

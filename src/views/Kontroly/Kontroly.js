@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -18,10 +18,6 @@ import PDFViewer from './PDFViewer';
 import { cilCloudDownload, cilMagnifyingGlass } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 
-// Načtení API klíče z .env souboru pro Vite
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
-
 const Kontroly = () => {
   const { zakaznikId } = useContext(UserContext); // Získání zakaznikId z kontextu
   const [inspections, setInspections] = useState([]);
@@ -38,11 +34,8 @@ const Kontroly = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}inspections`, {
+        const response = await api.get('inspections', {
           params: { zakaznikId },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         });
         const sortedData = response.data.sort((a, b) => new Date(b.Datum) - new Date(a.Datum));
         setInspections(sortedData);
@@ -60,8 +53,8 @@ const Kontroly = () => {
   const downloadFile = (fullUrl) => {
     const blobName = encodeURIComponent(fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', ''));
 
-    axios
-      .get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
         params: { blobName, type: 'download' },
         responseType: 'blob',
       })
@@ -83,8 +76,8 @@ const Kontroly = () => {
   const handleViewPdf = (fullUrl) => {
     const blobName = encodeURIComponent(fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', ''));
 
-    axios
-    .get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
         params: { blobName, type: 'view' },
       })
       .then((response) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import axios from 'axios'
+import api from 'src/api/apiClient'
 import {
   CCard,
   CButton,
@@ -27,35 +27,22 @@ const Invoice = () => {
         setError('Chybí zákaznické IC.')
         return
       }
-
-      const email = import.meta.env.VITE_API_EMAIL;
-      const apiKey = import.meta.env.VITE_API_KEY;      
-
-
-      if (!email || !apiKey) {
-        setError('Chybí email nebo API klíč.')
-        return
-      }
-
-      const auth = btoa(`${email}:${apiKey}`)
       setLoading(true)
 
       try {
-        const response = await axios.get(`https://api.vyfakturuj.cz/2.0/invoice/`, {
+        // Faktury se načítají bezpečně přes vlastní backend (server-side),
+        // aby se cizí API klíče nikdy nedostaly do prohlížeče.
+        const response = await api.get('invoices', {
           params: {
             q: zakaznikIC,
             rows_limit: 5,
-            sort: "date_created~desc",
-          },
-          headers: {
-            Authorization: `Basic ${auth}`,
-            Accept: '*/*',
+            sort: 'date_created~desc',
           },
         })
         setInvoices(response.data)
       } catch (err) {
         console.error('Chyba při načítání faktur:', err)
-        setError('Nepodařilo se načíst faktury.')
+        setError('Nepodařilo se načíst faktury (ověřte backend endpoint /invoices).')
       } finally {
         setLoading(false)
       }

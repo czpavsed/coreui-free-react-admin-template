@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -19,9 +19,6 @@ import {
 import { UserContext } from './../../components/UserContext';
 import PDFViewer from './PDFViewer';
 
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
-
 const SafetyLists = () => {
   const { zakaznikId } = useContext(UserContext);
   const [safetyLists, setSafetyLists] = useState([]);
@@ -39,16 +36,10 @@ const SafetyLists = () => {
 
       setLoading(true);
       try {
-        const endpoint =
-          selectedFilter === 'in_use'
-            ? `${API_BASE_URL}safety-list_in_use`
-            : `${API_BASE_URL}safety-list`;
+        const endpoint = selectedFilter === 'in_use' ? 'safety-list_in_use' : 'safety-list'
 
-        const response = await axios.get(endpoint, {
+        const response = await api.get(endpoint, {
           params: { zakaznikId },
-          headers: {
-            Authorization: `Bearer ${API_ACCESS_KEY}`,
-          },
         });
         setSafetyLists(response.data);
       } catch (error) {
@@ -65,8 +56,8 @@ const SafetyLists = () => {
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios
-      .get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
         params: { blobName, type: 'download' },
         responseType: 'blob',
       })
@@ -88,8 +79,8 @@ const SafetyLists = () => {
   const handleViewPdf = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios
-      .get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
         params: { blobName, type: 'view' },
       })
       .then((response) => {

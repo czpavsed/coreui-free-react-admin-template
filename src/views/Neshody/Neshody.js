@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -46,9 +46,6 @@ const Neshody = () => {
   // Nový stav pro dropdown status
   const [status, setStatus] = useState('Nová');
 
-  const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-  const API_BASE_URL = import.meta.env.VITE_API_API_URL;
-
   const formatDateToCzech = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('cs-CZ', {
@@ -82,9 +79,8 @@ const Neshody = () => {
       .split('?')[0]
       .replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
     try {
-      await axios.delete(`${API_BASE_URL}delete-blob-storage`, {
+      await api.delete('delete-blob-storage', {
         params: { blobName },
-        headers: { 'Authorization': `Bearer ${API_ACCESS_KEY}` },
       });
       setToastMessage('Fotografie byla úspěšně smazána.');
       fetchPhotosWithSasTokens(selectedNeshoda.NeshodaId);
@@ -109,11 +105,8 @@ const Neshody = () => {
     }
     setLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}neshody`, {
+      const response = await api.get('neshody', {
         params: { zakaznikId },
-        headers: {
-          'Authorization': `Bearer ${API_ACCESS_KEY}`,
-        },
       });
       setNeshody(response.data);
     } catch (err) {
@@ -127,20 +120,14 @@ const Neshody = () => {
   const fetchPhotosWithSasTokens = async (neshodaId) => {
     if (!neshodaId) return;
     try {
-      const response = await axios.get(`${API_BASE_URL}neshody-foto`, {
+      const response = await api.get('neshody-foto', {
         params: { neshodaId },
-        headers: {
-          'Authorization': `Bearer ${API_ACCESS_KEY}`,
-        },
       });
       const photosWithSas = await Promise.all(
         response.data.map(async (photo) => {
           try {
-            const sasResponse = await axios.get(`${API_BASE_URL}download`, {
+            const sasResponse = await api.get('download', {
               params: { blobName: photo.FotoBlobUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', ''), type: 'view' },
-              headers: {
-                'Authorization': `Bearer ${API_ACCESS_KEY}`,
-              },
             });
             return { ...photo, FotoBlobUrl: sasResponse.data.url };
           } catch (err) {
@@ -182,12 +169,9 @@ const Neshody = () => {
 
   const handleViewPhoto = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
-    axios
-      .get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
         params: { blobName, type: 'view' },
-        headers: {
-          'Authorization': `Bearer ${API_ACCESS_KEY}`,
-        },
       })
       .then((response) => {
         setSelectedPhotoUrl(response.data.url);
@@ -223,16 +207,11 @@ const Neshody = () => {
     };
     console.log('Odesílám data na server:', body);
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}update-naprava-neshoda`,
-        body,
-        {
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await api.post('update-naprava-neshoda', body, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
       if (response.status === 200) {
         setToastMessage('Záznam byl úspěšně aktualizován.');
         setSelectedNeshoda(null);

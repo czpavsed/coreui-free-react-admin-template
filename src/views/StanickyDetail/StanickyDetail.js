@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -23,10 +23,6 @@ import {
 import { CChartLine } from '@coreui/react-chartjs';
 import { getStyle } from '@coreui/utils';
 import { UserContext } from './../../components/UserContext';
-
-// ✅ API URL a Token z .env
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
 
 const Checkpoints = () => {
   const { zakaznikId } = useContext(UserContext);
@@ -54,11 +50,8 @@ const Checkpoints = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}checkpoints`, {
+        const response = await api.get('checkpoints', {
           params: { zakaznikId },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         });
 
         const sortedData = response.data.sort((a, b) => a.Číslo_staničky - b.Číslo_staničky);
@@ -94,11 +87,8 @@ const Checkpoints = () => {
     setTrendError(null);
 
     try {
-      const response = await axios.get(`${API_BASE_URL}vyhodnoceni`, {
+      const response = await api.get('vyhodnoceni', {
         params: { stanickaId },
-        headers: {
-          'Authorization': `Bearer ${API_ACCESS_KEY}`,
-        },
       });
 
       if (response.data.length === 0) {

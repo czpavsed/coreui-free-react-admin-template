@@ -14,11 +14,7 @@ import CIcon from '@coreui/icons-react'
 import { signOut } from 'firebase/auth'
 import { auth } from '../../firebaseConfig'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
-
-// Načtení API klíče z .env souboru pro Vite
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
+import api, { API_BASE_URL } from 'src/api/apiClient'
 
 const AppHeaderDropdown = () => {
   const navigate = useNavigate()
@@ -62,11 +58,8 @@ const AppHeaderDropdown = () => {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}customers`, {
+        const response = await api.get('customers', {
           params: { email: userEmail },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         })
 
         const data = response.data

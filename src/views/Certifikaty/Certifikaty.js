@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -18,10 +18,6 @@ import {
 } from '@coreui/react';
 import { UserContext } from './../../components/UserContext';
 import PDFViewer from './PDFViewer';
-
-// Načtení API klíče z .env souboru pro Vite
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
 const Certifikaty = () => {
   const { zakaznikId } = useContext(UserContext);
@@ -42,11 +38,8 @@ const Certifikaty = () => {
 
       setLoading(true);
       try {
-        const response = await axios.get(`${API_BASE_URL}certifikaty`, {
+        const response = await api.get('certifikaty', {
           params: { zakaznikId },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         });
 
         setCertifikaty(response.data);
@@ -66,10 +59,11 @@ const Certifikaty = () => {
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
       params: { blobName, type: 'download' },
       responseType: 'blob',
-    })
+      })
       .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -89,9 +83,10 @@ const Certifikaty = () => {
   const handleViewPdf = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
 
-    axios.get(`${API_BASE_URL}download`, {
+    api
+      .get('download', {
       params: { blobName, type: 'view' },
-    })
+      })
       .then(response => {
         setSelectedPdfUrl(response.data.url);
       })

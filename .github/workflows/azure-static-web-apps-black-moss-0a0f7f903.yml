@@ -15,9 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     env:
-      VITE_API_EMAIL: ${{ secrets.VITE_API_EMAIL }}
-      VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
-      VITE_API_ACCESS_KEY: ${{ secrets.VITE_API_ACCESS_KEY }}
       VITE_API_API_URL: ${{ secrets.VITE_API_API_URL }}
 
     steps:

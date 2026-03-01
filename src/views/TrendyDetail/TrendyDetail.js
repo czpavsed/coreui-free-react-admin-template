@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
-import axios from 'axios'
+import api from 'src/api/apiClient'
 import {
   CCard,
   CCardBody,
@@ -23,10 +23,6 @@ import { UserContext } from './../../components/UserContext';
 import { CChartLine } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
 
-// Načtení API klíče z .env souboru pro Vite
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
-
 const TrendyDetail = () => {
   const { zakaznikId } = useContext(UserContext)
   const [trendData, setTrendData] = useState([])
@@ -45,11 +41,8 @@ const TrendyDetail = () => {
 
       setLoading(true)
       try {
-        const response = await axios.get(`${API_BASE_URL}trends`, {
+        const response = await api.get('trends', {
           params: { zakaznikId },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         })
 
         const data = response.data

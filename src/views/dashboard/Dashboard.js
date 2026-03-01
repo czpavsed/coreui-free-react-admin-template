@@ -17,11 +17,7 @@ import {
 } from '@coreui/react'
 import TrendChart from './TrendChart'
 import { UserContext } from './../../components/UserContext'
-import axios from 'axios'
-
-// Načtení API klíče z .env souboru pro Vite
-const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
+import api from 'src/api/apiClient'
 
 // Import obrázků
 import Pavel from 'src/assets/images/Pavel.jpg'
@@ -48,21 +44,15 @@ const Dashboard = () => {
 
       try {
         // Načtení trendových dat podle zakaznikId
-        const trendResponse = await axios.get(`${API_BASE_URL}trends`, {
+        const trendResponse = await api.get('trends', {
           params: { zakaznikId },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         });
 
         setTrendData(trendResponse.data)
 
         // Načtení dat pro karty s filtrováním dle zakaznikId
-        const dataResponse = await axios.get(`${API_BASE_URL}customers`, {
+        const dataResponse = await api.get('customers', {
           params: { email: userEmail },
-          headers: {
-            'Authorization': `Bearer ${API_ACCESS_KEY}`,
-          },
         });
 
         const rawData = dataResponse.data

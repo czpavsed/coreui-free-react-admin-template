@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from 'src/api/apiClient'
 import { CButton, CSpinner } from "@coreui/react";
 
 const PhotoUploader = ({ zakaznikId, neshodaId, onUploadSuccess }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState(null);
-
-  const API_ACCESS_KEY = import.meta.env.VITE_API_ACCESS_KEY;
-  const API_BASE_URL = import.meta.env.VITE_API_API_URL;
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -34,16 +31,15 @@ const PhotoUploader = ({ zakaznikId, neshodaId, onUploadSuccess }) => {
       setIsUploading(true);
       setError(null);
 
-      const response = await axios.post(
-        `${API_BASE_URL}upload-blob-storage?blobName=neshody/${zakaznikId}/${selectedFile.name}&neshodaId=${neshodaId}`,
+      const response = await api.post(
+        `upload-blob-storage?blobName=neshody/${zakaznikId}/${selectedFile.name}&neshodaId=${neshodaId}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${API_ACCESS_KEY}`,
             "Content-Type": "multipart/form-data",
           },
         }
-      );
+      )
 
       if (response.status === 200 && response.data.url) {
         onUploadSuccess(response.data.url); // Informujeme rodičovský komponent o úspěšném uploadu
