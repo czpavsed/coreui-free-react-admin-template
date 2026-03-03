@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react'
+import { Link } from 'react-router-dom'
 import {
   CRow,
   CCol,
@@ -34,6 +35,8 @@ const Dashboard = () => {
   const [trendData, setTrendData] = useState([])
   const [uniqueServices, setUniqueServices] = useState([])
   const [data, setData] = useState([]) // Data pro karty
+  const [checkpointsCount, setCheckpointsCount] = useState(null)
+  const [checkpointsCountLoading, setCheckpointsCountLoading] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,6 +46,24 @@ const Dashboard = () => {
       }
 
       try {
+        // Počet kontrolních bodů dle zakaznikId
+        setCheckpointsCountLoading(true)
+        try {
+          const checkpointsResponse = await api.get('checkpoints', {
+            params: { zakaznikId },
+          })
+
+          const count = Array.isArray(checkpointsResponse.data)
+            ? checkpointsResponse.data.length
+            : 0
+          setCheckpointsCount(count)
+        } catch (error) {
+          console.error('Chyba při načítání kontrolních bodů:', error)
+          setCheckpointsCount(null)
+        } finally {
+          setCheckpointsCountLoading(false)
+        }
+
         // Načtení trendových dat podle zakaznikId
         const trendResponse = await api.get('trends', {
           params: { zakaznikId },
@@ -111,7 +132,7 @@ const Dashboard = () => {
           <CCol sm={6} key={index}>
             <CRow>
               {/* Plánovaná kontrola */}
-              <CCol sm={6}>
+              <CCol sm={4}>
                 <CCard textBgColor={item.Color} className={`mb-3 border-${item.Color}`}>
                   <CCardHeader>Plánovaná kontrola:</CCardHeader>
                   <CCardBody>
@@ -122,7 +143,7 @@ const Dashboard = () => {
               </CCol>
 
               {/* Technik */}
-              <CCol sm={6}>
+              <CCol sm={4}>
                 <CCard textBgColor="primary" className={`mb-3 border-${item.Color}`}>
                   <CCardHeader>Technik:</CCardHeader>
                   <CCardBody className="d-flex align-items-center">
@@ -137,6 +158,23 @@ const Dashboard = () => {
                       </CCardTitle>
                       <CCardText>Tel: {item.Telefon}</CCardText>
                     </div>
+                  </CCardBody>
+                </CCard>
+              </CCol>
+
+              {/* Kontrolní body */}
+              <CCol sm={4}>
+                <CCard className="mb-3">
+                  <CCardHeader>Kontrolní body:</CCardHeader>
+                  <CCardBody>
+                    <CCardTitle className="text-end">
+                      {checkpointsCountLoading ? 'Načítám…' : checkpointsCount ?? '—'}
+                    </CCardTitle>
+                    <CCardText className="text-end">
+                      <Link to="/PrehledBodu" className="text-decoration-none">
+                        Přejít na přehled bodů
+                      </Link>
+                    </CCardText>
                   </CCardBody>
                 </CCard>
               </CCol>

@@ -65,6 +65,12 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'Přehled bodů',
+    to: '/PrehledBodu',
+    icon: <CIcon icon={cilObjectGroup} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
     name: 'Kontrolní body',
     to: '/StanickyDetail',
     icon: <CIcon icon={cilFlagAlt} customClassName="nav-icon" />, // Ikona pro Trendy Detail
