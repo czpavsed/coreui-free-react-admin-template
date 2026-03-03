@@ -101,19 +101,21 @@ const AppHeaderDropdown = () => {
 
         {/* Dropdown pro výběr zákazníka */}
         <CDropdownHeader className="bg-body-secondary fw-semibold">Vyberte zákazníka</CDropdownHeader>
-        {customers.length > 0 ? (
-          customers.map((customer) => (
-            <CDropdownItem
-              key={customer.ZakaznikId}
-              active={customer.ZakaznikId === zakaznikId}
-              onClick={() => handleCustomerSelect(customer)}
-            >
-              {customer.Nazev}
-            </CDropdownItem>
-          ))
-        ) : (
-          <CDropdownItem disabled>Žádní zákazníci</CDropdownItem>
-        )}
+        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+          {customers.length > 0 ? (
+            customers.map((customer) => (
+              <CDropdownItem
+                key={customer.ZakaznikId}
+                active={customer.ZakaznikId === zakaznikId}
+                onClick={() => handleCustomerSelect(customer)}
+              >
+                {customer.Nazev}
+              </CDropdownItem>
+            ))
+          ) : (
+            <CDropdownItem disabled>Žádní zákazníci</CDropdownItem>
+          )}
+        </div>
 
         <CDropdownDivider />
 
