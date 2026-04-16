@@ -1,10 +1,7 @@
-import React, { useState, useContext } from "react";
-import axios from "axios";
-import { CCard, CCardBody, CCardHeader, CCol, CRow, CButton, CSpinner, CAlert } from "@coreui/react";
-import { UserContext } from "../../components/UserContext";
-
-// Načtení API klíče z .env souboru pro Vite
-const API_BASE_URL = import.meta.env.VITE_API_API_URL;
+import React, { useState, useContext } from 'react'
+import { CCard, CCardBody, CCardHeader, CCol, CRow, CButton, CSpinner, CAlert } from '@coreui/react'
+import { UserContext } from '../../components/UserContext'
+import api from 'src/api/apiClient'
 
 const TrendAnalysis = () => {
   const { zakaznikId } = useContext(UserContext);
@@ -12,42 +9,75 @@ const TrendAnalysis = () => {
   const [error, setError] = useState(null);
   const [analysisResult, setAnalysisResult] = useState(null);
 
+  const getApiErrorMessage = (err) => {
+    const status = err?.response?.status
+    const data = err?.response?.data
+
+    const backendDetail =
+      data?.detail || data?.message || data?.error || (typeof data === 'string' ? data : null)
+
+    if (status === 500) {
+      return backendDetail
+        ? `Serverová chyba (500): ${backendDetail}`
+        : 'Serverová chyba (500). API endpoint selhal při zpracování požadavku.'
+    }
+
+    if (status) {
+      return backendDetail
+        ? `Chyba API (${status}): ${backendDetail}`
+        : `Chyba API (${status}).`
+    }
+
+    return 'Nepodařilo se načíst analýzu trendů.'
+  }
+
   const fetchAnalysis = async () => {
     if (!zakaznikId) {
-      setError("❌ Chybí zakaznikId!");
-      return;
+      setError('Nejprve vyberte zákazníka v pravém horním menu.')
+      return
     }
 
-    setLoading(true);
-    setError(null);
+    setLoading(true)
+    setError(null)
 
     try {
-      const response = await axios.get(`${API_BASE_URL}analyza-trendu`, {
+      const response = await api.get('analyza-trendu', {
         params: { zakaznikId },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      })
 
-      setAnalysisResult(response.data);
+      setAnalysisResult(response.data)
     } catch (err) {
-      console.error("❌ Chyba při načítání analýzy trendů:", err);
-      setError("❌ Nepodařilo se načíst analýzu.");
+      const requestId =
+        err?.response?.headers?.['x-request-id'] ||
+        err?.response?.headers?.['x-ms-request-id'] ||
+        err?.response?.headers?.['traceparent'] ||
+        null
+
+      console.error('❌ Chyba při načítání analýzy trendů:', {
+        message: err?.message,
+        code: err?.code,
+        status: err?.response?.status,
+        data: err?.response?.data,
+        requestId,
+      })
+
+      setAnalysisResult(null)
+      setError(getApiErrorMessage(err))
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <CCard className="mb-4">
       <CCardHeader>
         <CRow>
           <CCol xs={8}>
-            <h5>📊 Analýza Trendů</h5>
+            <h5>📊 Analýza trendů</h5>
           </CCol>
           <CCol xs={4} className="text-end">
             <CButton color="primary" onClick={fetchAnalysis} disabled={loading}>
-              {loading ? <CSpinner size="sm" /> : "🔍 Spustit analýzu"}
+              {loading ? <CSpinner size="sm" /> : '🔍 Spustit analýzu'}
             </CButton>
           </CCol>
         </CRow>
@@ -66,23 +96,23 @@ const TrendAnalysis = () => {
         {analysisResult && (
           <div>
             <h6>🔎 **Shrnutí:**</h6>
-            <p>{analysisResult.shrnutí || "Žádné shrnutí dostupné."}</p>
+            <p>{analysisResult.shrnutí || 'Žádné shrnutí dostupné.'}</p>
 
             <h6>🐀 **Hlodavci**</h6>
             <ul>
-              <li><strong>Vnitřní prostory:</strong> {analysisResult.hlodavci?.vnitřní_prostory || "Nejsou data"}</li>
-              <li><strong>Venkovní prostory:</strong> {analysisResult.hlodavci?.venkovní_prostory || "Nejsou data"}</li>
+              <li><strong>Vnitřní prostory:</strong> {analysisResult.hlodavci?.vnitřní_prostory || 'Nejsou data'}</li>
+              <li><strong>Venkovní prostory:</strong> {analysisResult.hlodavci?.venkovní_prostory || 'Nejsou data'}</li>
             </ul>
 
             <h6>🦟 **Létající hmyz**</h6>
             <ul>
-              <li><strong>Zavíječi:</strong> {analysisResult.létající_hmyz?.zavíječi || "Nejsou data"}</li>
-              <li><strong>Elektrické lapače:</strong> {analysisResult.létající_hmyz?.elektrické_lapače || "Nejsou data"}</li>
+              <li><strong>Zavíječi:</strong> {analysisResult.létající_hmyz?.zavíječi || 'Nejsou data'}</li>
+              <li><strong>Elektrické lapače:</strong> {analysisResult.létající_hmyz?.elektrické_lapače || 'Nejsou data'}</li>
             </ul>
 
             <h6>🐜 **Lezoucí hmyz**</h6>
             <ul>
-              <li><strong>Monitorovací pasti:</strong> {analysisResult.lezoucí_hmyz?.monitorovací_pasti || "Nejsou data"}</li>
+              <li><strong>Monitorovací pasti:</strong> {analysisResult.lezoucí_hmyz?.monitorovací_pasti || 'Nejsou data'}</li>
             </ul>
 
             <h6>🎯 **Cíle na rok 2025:**</h6>
@@ -93,7 +123,7 @@ const TrendAnalysis = () => {
         )}
       </CCardBody>
     </CCard>
-  );
-};
+  )
+}
 
-export default TrendAnalysis;
+export default TrendAnalysis

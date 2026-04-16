@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState, useContext } from 'react';
 import api from 'src/api/apiClient'
 import {
   CCard,
@@ -12,10 +12,14 @@ import {
   CTableRow,
   CButton,
   CSpinner,
-  CFormSelect,
+  CFormInput,
+  CInputGroup,
+  CInputGroupText,
   CRow,
   CCol
 } from '@coreui/react';
+import CIcon from '@coreui/icons-react';
+import { cilSortAscending, cilSortDescending } from '@coreui/icons';
 import { UserContext } from './../../components/UserContext';
 import PDFViewer from './PDFViewer';
 
@@ -25,23 +29,25 @@ const SafetyLists = () => {
   const [selectedPdfUrl, setSelectedPdfUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedFilter, setSelectedFilter] = useState('in_use'); // "in_use" nebo "all"
+  const [searchText, setSearchText] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
 
   useEffect(() => {
     const fetchSafetyLists = async () => {
       if (!zakaznikId) {
-        console.error('ZakaznikId není dostupné.');
+        setError(null);
+        setSafetyLists([]);
+        setLoading(false);
         return;
       }
 
       setLoading(true);
+      setError(null);
       try {
-        const endpoint = selectedFilter === 'in_use' ? 'safety-list_in_use' : 'safety-list'
-
-        const response = await api.get(endpoint, {
+        const response = await api.get('safety-list', {
           params: { zakaznikId },
         });
-        setSafetyLists(response.data);
+        setSafetyLists(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error('Chyba při načítání bezpečnostních listů:', error);
         setError('Nepodařilo se načíst bezpečnostní listy.');
@@ -51,7 +57,30 @@ const SafetyLists = () => {
     };
 
     fetchSafetyLists();
-  }, [zakaznikId, selectedFilter]);
+  }, [zakaznikId]);
+
+  const displayedSafetyLists = useMemo(() => {
+    const query = searchText.trim().toLocaleLowerCase('cs');
+
+    const filtered = (Array.isArray(safetyLists) ? safetyLists : []).filter((list) => {
+      if (!query) return true;
+      return (list?.Nazev ?? '').toLocaleLowerCase('cs').includes(query);
+    });
+
+    filtered.sort((a, b) => {
+      const compareResult = (a?.Nazev ?? '').localeCompare(b?.Nazev ?? '', 'cs', {
+        sensitivity: 'base',
+      });
+
+      return sortDirection === 'asc' ? compareResult : -compareResult;
+    });
+
+    return filtered;
+  }, [safetyLists, searchText, sortDirection]);
+
+  const toggleSortDirection = () => {
+    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
 
   const downloadFile = (fullUrl) => {
     const blobName = fullUrl.replace('https://deratorportal.blob.core.windows.net/zakaznici-soubory/', '');
@@ -103,18 +132,37 @@ const SafetyLists = () => {
     <CCard className="mb-4">
       <CCardHeader>
         <CRow>
-          <CCol xs={6}>
+          <CCol xs={12}>
             <strong>Bezpečnostní listy</strong>
           </CCol>
-          <CCol xs={6}>
-            <CFormSelect
-              value={selectedFilter}
-              onChange={(e) => setSelectedFilter(e.target.value)}
-              aria-label="Filtr bezpečnostních listů"
-            >
-              <option value="in_use">Použité bezpečnostní listy</option>
-              <option value="all">Všechny bezpečnostní listy</option>
-            </CFormSelect>
+        </CRow>
+        <CRow className="mt-3 g-2">
+          <CCol xs={12}>
+            <CInputGroup>
+              <CInputGroupText>Filtr</CInputGroupText>
+              <CFormInput
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="Hledat podle názvu bezpečnostního listu..."
+                aria-label="Hledat bezpečnostní listy podle názvu"
+                size="lg"
+              />
+              <CButton
+                color="secondary"
+                variant="outline"
+                onClick={toggleSortDirection}
+                title={sortDirection === 'asc' ? 'Řazení A-Z' : 'Řazení Z-A'}
+                aria-label={
+                  sortDirection === 'asc'
+                    ? 'Přepnout řazení na Z-A'
+                    : 'Přepnout řazení na A-Z'
+                }
+              >
+                <CIcon icon={sortDirection === 'asc' ? cilSortAscending : cilSortDescending} />
+                {' '}
+                {sortDirection === 'asc' ? 'A-Z' : 'Z-A'}
+              </CButton>
+            </CInputGroup>
           </CCol>
         </CRow>
       </CCardHeader>
@@ -136,8 +184,8 @@ const SafetyLists = () => {
               </CTableRow>
             </CTableHead>
             <CTableBody>
-              {safetyLists.length > 0 ? (
-                safetyLists.map((list) => (
+              {displayedSafetyLists.length > 0 ? (
+                displayedSafetyLists.map((list) => (
                   <CTableRow key={list.Bezpecnostni_listyId}>
                     <CTableDataCell>{list.Nazev}</CTableDataCell>
                     <CTableDataCell>
@@ -155,7 +203,9 @@ const SafetyLists = () => {
               ) : (
                 <CTableRow>
                   <CTableDataCell colSpan="3" className="text-center">
-                    Žádné bezpečnostní listy nebyly nalezeny.
+                    {safetyLists.length === 0
+                      ? 'Žádné bezpečnostní listy nebyly nalezeny.'
+                      : 'Žádné bezpečnostní listy neodpovídají hledání.'}
                   </CTableDataCell>
                 </CTableRow>
               )}
