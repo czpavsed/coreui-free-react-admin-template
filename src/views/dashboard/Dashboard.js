@@ -8,6 +8,7 @@ import {
   CCardTitle,
   CCardBody,
   CCardHeader,
+  CFormSelect,
   CProgress,
   CTable,
   CTableBody,
@@ -31,10 +32,12 @@ import Věra from 'src/assets/images/Věra.jpg'
 import Avatar from 'src/assets/images/D.png'
 
 const Dashboard = () => {
-  const { zakaznikId, userEmail } = useContext(UserContext) // Přístup k zakaznikId a userEmail
+  const { zakaznikId, zakaznikNazev, userEmail, setZakaznikId, setZakaznikNazev, setZakaznikIC } =
+    useContext(UserContext) // Přístup k zakaznikId a userEmail
   const [trendData, setTrendData] = useState([])
   const [uniqueServices, setUniqueServices] = useState([])
   const [data, setData] = useState([]) // Data pro karty
+  const [availableCustomers, setAvailableCustomers] = useState([])
   const [checkpointsCount, setCheckpointsCount] = useState(null)
   const [checkpointsCountLoading, setCheckpointsCountLoading] = useState(false)
 
@@ -67,16 +70,20 @@ const Dashboard = () => {
         // Načtení trendových dat podle zakaznikId
         const trendResponse = await api.get('trends', {
           params: { zakaznikId },
-        });
+        })
 
         setTrendData(trendResponse.data)
 
         // Načtení dat pro karty s filtrováním dle zakaznikId
         const dataResponse = await api.get('customers', {
           params: { email: userEmail },
-        });
+        })
 
         const rawData = dataResponse.data
+        const uniqueCustomers = Array.from(
+          new Map(rawData.map((item) => [item.ZakaznikId, item])).values(),
+        )
+        setAvailableCustomers(uniqueCustomers)
 
         // Filtrování podle zakaznikId
         const filteredData = rawData.filter((item) => item.ZakaznikId === zakaznikId)
@@ -85,7 +92,6 @@ const Dashboard = () => {
         // Získání unikátních SluzbaID
         const services = Array.from(new Set(trendResponse.data.map((item) => item.SluzbaID)))
         setUniqueServices(services)
-
       } catch (error) {
         console.error('Chyba při načítání dat:', error)
       }
@@ -124,65 +130,117 @@ const Dashboard = () => {
     }
   }
 
+  const otherCustomers = availableCustomers.filter((customer) => customer.ZakaznikId !== zakaznikId)
+
+  const handleCustomerCardClick = (customer) => {
+    setZakaznikId(customer.ZakaznikId)
+    setZakaznikNazev(customer.Nazev)
+    setZakaznikIC(customer.IC)
+  }
+
   return (
     <>
       {/* Karty Plánovaná kontrola a Technik */}
-      <CRow>
+      <CRow className="mb-3">
         {data.map((item, index) => (
-          <CCol sm={6} key={index}>
-            <CRow>
+          <CCol xs={12} key={index}>
+            <CRow className="align-items-stretch">
               {/* Plánovaná kontrola */}
-              <CCol sm={4}>
-                <CCard textBgColor={item.Color} className={`mb-3 border-${item.Color}`}>
-                  <CCardHeader>Plánovaná kontrola:</CCardHeader>
-                  <CCardBody>
-                    <CCardTitle>{formatDate(item.DatumDalsiKontroly)}</CCardTitle>
-                    <CCardText>Za {item.ZbyvajiciDny} dní.</CCardText>
-                  </CCardBody>
-                </CCard>
+              <CCol xs={12} md={6} xl={otherCustomers.length > 0 ? 3 : 4}>
+                <div className="mb-3 h-100">
+                  <CCard textBgColor={item.Color} className={`h-100 border-${item.Color}`}>
+                    <CCardHeader>Plánovaná kontrola:</CCardHeader>
+                    <CCardBody>
+                      <CCardTitle>{formatDate(item.DatumDalsiKontroly)}</CCardTitle>
+                      <CCardText>Za {item.ZbyvajiciDny} dní.</CCardText>
+                    </CCardBody>
+                  </CCard>
+                </div>
               </CCol>
 
               {/* Technik */}
-              <CCol sm={4}>
-                <CCard textBgColor="primary" className={`mb-3 border-${item.Color}`}>
-                  <CCardHeader>Technik:</CCardHeader>
-                  <CCardBody className="d-flex align-items-center">
-                    <img
-                      src={getImagePath(item.Jmeno)}
-                      alt={`${item.Jmeno} ${item.Prijmeni}`}
-                      style={{ width: '15%', borderRadius: '10px', marginRight: '10px' }}
-                    />
-                    <div>
-                      <CCardTitle>
-                        {item.Jmeno} {item.Prijmeni}
-                      </CCardTitle>
-                      <CCardText>Tel: {item.Telefon}</CCardText>
-                    </div>
-                  </CCardBody>
-                </CCard>
+              <CCol xs={12} md={6} xl={otherCustomers.length > 0 ? 3 : 4}>
+                <div className="mb-3 h-100">
+                  <CCard textBgColor="primary" className={`h-100 border-${item.Color}`}>
+                    <CCardHeader>Technik:</CCardHeader>
+                    <CCardBody className="d-flex align-items-center">
+                      <img
+                        src={getImagePath(item.Jmeno)}
+                        alt={`${item.Jmeno} ${item.Prijmeni}`}
+                        style={{ width: '15%', borderRadius: '10px', marginRight: '10px' }}
+                      />
+                      <div>
+                        <CCardTitle>
+                          {item.Jmeno} {item.Prijmeni}
+                        </CCardTitle>
+                        <CCardText>Tel: {item.Telefon}</CCardText>
+                      </div>
+                    </CCardBody>
+                  </CCard>
+                </div>
               </CCol>
 
               {/* Kontrolní body */}
-              <CCol sm={4}>
-                <CCard className="mb-3">
-                  <CCardHeader>Kontrolní body:</CCardHeader>
-                  <CCardBody>
-                    <CCardTitle className="text-end">
-                      {checkpointsCountLoading ? 'Načítám…' : checkpointsCount ?? '—'}
-                    </CCardTitle>
-                    <CCardText className="text-end">
-                      <Link to="/PrehledBodu" className="text-decoration-none">
-                        Přejít na přehled bodů
-                      </Link>
-                    </CCardText>
-                  </CCardBody>
-                </CCard>
+              <CCol xs={12} md={6} xl={otherCustomers.length > 0 ? 3 : 4}>
+                <div className="mb-3 h-100">
+                  <CCard className="h-100">
+                    <CCardHeader>Kontrolní body:</CCardHeader>
+                    <CCardBody>
+                      <CCardTitle className="text-end">
+                        {checkpointsCountLoading ? 'Načítám…' : (checkpointsCount ?? '—')}
+                      </CCardTitle>
+                      <CCardText className="text-end">
+                        <Link to="/PrehledBodu" className="text-decoration-none">
+                          Přejít na přehled bodů
+                        </Link>
+                      </CCardText>
+                    </CCardBody>
+                  </CCard>
+                </div>
               </CCol>
+
+              {otherCustomers.length > 0 && (
+                <CCol xs={12} md={6} xl={3}>
+                  <div className="mb-3 h-100">
+                    <CCard className="h-100">
+                      <CCardHeader>Objekt:</CCardHeader>
+                      <CCardBody>
+                        <div className="text-medium-emphasis text-truncate mb-2">
+                          {zakaznikNazev || ' '}
+                        </div>
+                        <div>
+                          <CFormSelect
+                            key={zakaznikId}
+                            aria-label="Výběr objektu"
+                            defaultValue=""
+                            onChange={(event) => {
+                              const selectedCustomer = otherCustomers.find(
+                                (customer) => String(customer.ZakaznikId) === event.target.value,
+                              )
+
+                              if (selectedCustomer) {
+                                handleCustomerCardClick(selectedCustomer)
+                              }
+                            }}
+                          >
+                            <option value="">Vyberte objekt</option>
+                            {otherCustomers.map((customer) => (
+                              <option key={customer.ZakaznikId} value={customer.ZakaznikId}>
+                                {customer.Nazev}
+                              </option>
+                            ))}
+                          </CFormSelect>
+                        </div>
+                      </CCardBody>
+                    </CCard>
+                  </div>
+                </CCol>
+              )}
             </CRow>
           </CCol>
         ))}
       </CRow>
-      
+
       {/* Trendy Požerů a Záchytů */}
       <CRow>
         <CCol xs={12}>
