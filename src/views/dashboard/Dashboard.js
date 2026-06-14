@@ -144,10 +144,10 @@ const Dashboard = () => {
       <CRow className="mb-3">
         {data.map((item, index) => (
           <CCol xs={12} key={index}>
-            <CRow className="align-items-stretch">
+            <CRow className="align-items-stretch g-3">
               {/* Plánovaná kontrola */}
               <CCol xs={12} md={6} xl={otherCustomers.length > 0 ? 3 : 4}>
-                <div className="mb-3 h-100">
+                <div className="h-100">
                   <CCard textBgColor={item.Color} className={`h-100 border-${item.Color}`}>
                     <CCardHeader>Plánovaná kontrola:</CCardHeader>
                     <CCardBody>
@@ -160,7 +160,7 @@ const Dashboard = () => {
 
               {/* Technik */}
               <CCol xs={12} md={6} xl={otherCustomers.length > 0 ? 3 : 4}>
-                <div className="mb-3 h-100">
+                <div className="h-100">
                   <CCard textBgColor="primary" className={`h-100 border-${item.Color}`}>
                     <CCardHeader>Technik:</CCardHeader>
                     <CCardBody className="d-flex align-items-center">
@@ -182,7 +182,7 @@ const Dashboard = () => {
 
               {/* Kontrolní body */}
               <CCol xs={12} md={6} xl={otherCustomers.length > 0 ? 3 : 4}>
-                <div className="mb-3 h-100">
+                <div className="h-100">
                   <CCard className="h-100">
                     <CCardHeader>Kontrolní body:</CCardHeader>
                     <CCardBody>
@@ -201,7 +201,7 @@ const Dashboard = () => {
 
               {otherCustomers.length > 0 && (
                 <CCol xs={12} md={6} xl={3}>
-                  <div className="mb-3 h-100">
+                  <div className="h-100">
                     <CCard className="h-100">
                       <CCardHeader>Objekt:</CCardHeader>
                       <CCardBody>
