@@ -20,6 +20,7 @@ import {
   cilCode,
   cilLightbulb,
   cilEnvelopeClosed,
+  cilSun,
 } from '@coreui/icons'
 import { CNavTitle, CNavItem } from '@coreui/react'
 
@@ -47,15 +48,15 @@ const _nav = [
   },
   {
     component: CNavItem,
-    name: 'Neshody', 
-    to: '/Neshody',
-    icon: <CIcon icon={cilEnvelopeClosed} customClassName="nav-icon" />, // Ikona pro Kontroly
-  },
-  {
-    component: CNavItem,
     name: 'Roční trendy',
     to: '/Trendy',
     icon: <CIcon icon={cilClipboard} customClassName="nav-icon" />, // Ikona pro Trendy
+  },
+  {
+    component: CNavItem,
+    name: 'UVA lapače',
+    to: '/PlanovaneAkce',
+    icon: <CIcon icon={cilSun} customClassName="nav-icon" />,
   },
   {
     component: CNavItem,
@@ -82,6 +83,12 @@ const _nav = [
     name: 'Harmonogram',
     to: '/Harmonogram',
     icon: <CIcon icon={cilCalendarCheck} customClassName="nav-icon" />, // Ikona pro Harmonogram
+  },
+  {
+    component: CNavItem,
+    name: 'Neshody', 
+    to: '/Neshody',
+    icon: <CIcon icon={cilEnvelopeClosed} customClassName="nav-icon" />, // Ikona pro Kontroly
   },
   {
     component: CNavItem,

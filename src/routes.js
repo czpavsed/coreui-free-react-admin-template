@@ -11,6 +11,7 @@ const SafetyLists = React.lazy(() => import('./views/SafetyLists/SafetyLists'))
 const Certifikaty = React.lazy(() => import('./views/Certifikaty/Certifikaty'))
 const TrendyDetail = React.lazy(() => import('./views/TrendyDetail/TrendyDetail'))
 const Harmonogram = React.lazy(() => import('./views/Harmonogram/Harmonogram'))
+const PlanovaneAkce = React.lazy(() => import('./views/PlanovaneAkce/PlanovaneAkce'))
 const StanickyDetail = React.lazy(() => import('./views/StanickyDetail/StanickyDetail'))
 const PrehledBodu = React.lazy(() => import('./views/PrehledBodu/PrehledBodu'))
 const Mapy = React.lazy(() => import('./views/Mapy/Mapy'))
@@ -75,6 +76,7 @@ const routes = [
   { path: '/TrendyDetail', name: 'Trendy grafy', element: TrendyDetail },
   { path: '/Certifikaty', name: 'Certifikaty', element: Certifikaty },
   { path: '/Harmonogram', name: 'Harmonogram', element: Harmonogram },
+  { path: '/PlanovaneAkce', name: 'UVA lapače', element: PlanovaneAkce },
   { path: '/PrehledBodu', name: 'Přehled bodů', element: PrehledBodu },
   { path: '/StanickyDetail', name: 'Kontrolni body', element: StanickyDetail },
   { path: '/TrendAnalysis', name: 'TrendAnalysis', element: TrendAnalysis },
