@@ -16,15 +16,75 @@ import {
 import CIcon from "@coreui/icons-react";
 import { cilLockLocked, cilUser } from "@coreui/icons";
 import { auth } from "../../../firebaseConfig";
-import { signInWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+  isSignInWithEmailLink,
+  sendEmailVerification,
+  sendSignInLinkToEmail,
+  signInWithEmailAndPassword,
+  signInWithEmailLink,
+} from "firebase/auth";
 import logo from "src/assets/images/Logo.png";
+
+const EMAIL_LINK_STORAGE_KEY = "derator.emailForSignIn";
+
+function getEmailLinkActionCodeSettings() {
+  const origin = window.location.origin;
+  const path = window.location.pathname || "/";
+
+  return {
+    url: `${origin}${path}#/login`,
+    handleCodeInApp: true,
+  };
+}
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState(""); // Pro ukládání UI hlášek
   const [userForVerification, setUserForVerification] = useState(null);
+  const [sendingLink, setSendingLink] = useState(false);
+  const [processingLink, setProcessingLink] = useState(false);
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const finishEmailLinkSignIn = async () => {
+      if (!isSignInWithEmailLink(auth, window.location.href)) {
+        return;
+      }
+
+      setProcessingLink(true);
+      setMessage("Dokončuji přihlášení z odkazu...");
+
+      try {
+        let emailForSignIn = window.localStorage.getItem(EMAIL_LINK_STORAGE_KEY) || "";
+
+        if (!emailForSignIn) {
+          emailForSignIn = window.prompt("Zadejte svůj e-mail pro dokončení přihlášení") || "";
+        }
+
+        if (!emailForSignIn) {
+          setMessage("Pro dokončení přihlášení je potřeba zadat e-mail.");
+          return;
+        }
+
+        await signInWithEmailLink(auth, emailForSignIn, window.location.href);
+        window.localStorage.removeItem(EMAIL_LINK_STORAGE_KEY);
+
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
+
+        navigate("/");
+      } catch (error) {
+        console.error("Chyba při přihlášení přes odkaz:", error);
+        setMessage("Přihlášení přes odkaz se nepodařilo dokončit. Požádejte o nový odkaz.");
+      } finally {
+        setProcessingLink(false);
+      }
+    };
+
+    finishEmailLinkSignIn();
+  }, [navigate, onLoginSuccess]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -55,6 +115,28 @@ const Login = ({ onLoginSuccess }) => {
     } catch (error) {
       console.error(error);
       setMessage("Chyba přihlášení. Prosím, zkontrolujte email a heslo.");
+    }
+  };
+
+  const handleSendLoginLink = async () => {
+    if (!email.trim()) {
+      setMessage("Nejprve zadejte svůj e-mail.");
+      return;
+    }
+
+    setSendingLink(true);
+    setMessage("");
+    setUserForVerification(null);
+
+    try {
+      await sendSignInLinkToEmail(auth, email.trim(), getEmailLinkActionCodeSettings());
+      window.localStorage.setItem(EMAIL_LINK_STORAGE_KEY, email.trim());
+      setMessage("Přihlašovací odkaz byl odeslán do e-mailu. Otevřete ho na tomto zařízení.");
+    } catch (error) {
+      console.error("Chyba při odeslání přihlašovacího odkazu:", error);
+      setMessage("Nepodařilo se odeslat přihlašovací odkaz. Zkontrolujte nastavení Firebase a domény.");
+    } finally {
+      setSendingLink(false);
     }
   };
 
@@ -112,6 +194,20 @@ const Login = ({ onLoginSuccess }) => {
                   <CButton type="submit" color="primary" className="w-100">
                     Přihlásit
                   </CButton>
+
+                  <CButton
+                    type="button"
+                    color="primary"
+                    className="w-100 mt-3"
+                    onClick={handleSendLoginLink}
+                    disabled={sendingLink || processingLink}
+                  >
+                    {sendingLink ? "Odesílám odkaz..." : "Poslat přihlašovací odkaz"}
+                  </CButton>
+
+                  <div className="mt-2 px-2 text-center text-body-secondary small">
+                    Pokud nechcete zadávat heslo, nechte si poslat jednorázový odkaz do e-mailu.
+                  </div>
 
                   <div className="mt-4 text-center">
                     <p>
