@@ -44,6 +44,8 @@ const Login = ({ onLoginSuccess }) => {
   const [userForVerification, setUserForVerification] = useState(null);
   const [sendingLink, setSendingLink] = useState(false);
   const [processingLink, setProcessingLink] = useState(false);
+  const [authMode, setAuthMode] = useState("password");
+  const [pendingEmailLink, setPendingEmailLink] = useState("");
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -53,22 +55,21 @@ const Login = ({ onLoginSuccess }) => {
       }
 
       setProcessingLink(true);
-      setMessage("Dokončuji přihlášení z odkazu...");
+      setAuthMode("emailLink");
 
       try {
         let emailForSignIn = window.localStorage.getItem(EMAIL_LINK_STORAGE_KEY) || "";
 
         if (!emailForSignIn) {
-          emailForSignIn = window.prompt("Zadejte svůj e-mail pro dokončení přihlášení") || "";
-        }
-
-        if (!emailForSignIn) {
-          setMessage("Pro dokončení přihlášení je potřeba zadat e-mail.");
+          setPendingEmailLink(window.location.href);
+          setMessage("Pro dokončení přihlášení z odkazu zadejte svůj e-mail níže.");
           return;
         }
 
+        setMessage("Dokončuji přihlášení z odkazu...");
         await signInWithEmailLink(auth, emailForSignIn, window.location.href);
         window.localStorage.removeItem(EMAIL_LINK_STORAGE_KEY);
+        setPendingEmailLink("");
 
         if (onLoginSuccess) {
           onLoginSuccess();
@@ -86,10 +87,51 @@ const Login = ({ onLoginSuccess }) => {
     finishEmailLinkSignIn();
   }, [navigate, onLoginSuccess]);
 
+  const completePendingEmailLinkSignIn = async (emailForSignIn) => {
+    if (!pendingEmailLink) {
+      return;
+    }
+
+    if (!emailForSignIn.trim()) {
+      setMessage("Pro dokončení přihlášení zadejte svůj e-mail.");
+      return;
+    }
+
+    setProcessingLink(true);
+    setMessage("Dokončuji přihlášení z odkazu...");
+
+    try {
+      await signInWithEmailLink(auth, emailForSignIn.trim(), pendingEmailLink);
+      window.localStorage.removeItem(EMAIL_LINK_STORAGE_KEY);
+      setPendingEmailLink("");
+
+      if (onLoginSuccess) {
+        onLoginSuccess();
+      }
+
+      navigate("/");
+    } catch (error) {
+      console.error("Chyba při dokončení přihlášení přes odkaz:", error);
+      setMessage("Přihlášení přes odkaz se nepodařilo dokončit. Požádejte o nový odkaz.");
+    } finally {
+      setProcessingLink(false);
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setMessage("");
     setUserForVerification(null);
+
+    if (pendingEmailLink) {
+      await completePendingEmailLinkSignIn(email);
+      return;
+    }
+
+    if (authMode === "emailLink") {
+      await handleSendLoginLink();
+      return;
+    }
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -124,6 +166,7 @@ const Login = ({ onLoginSuccess }) => {
       return;
     }
 
+    setAuthMode("emailLink");
     setSendingLink(true);
     setMessage("");
     setUserForVerification(null);
@@ -162,6 +205,27 @@ const Login = ({ onLoginSuccess }) => {
                   <h1>Přihlášení</h1>
                   <p className="text-body-secondary">Přihlašte se prosím.</p>
 
+                  <div className="d-grid gap-2 mb-3">
+                    <CButton
+                      type="button"
+                      color={authMode === "password" ? "primary" : "secondary"}
+                      variant={authMode === "password" ? undefined : "outline"}
+                      onClick={() => setAuthMode("password")}
+                      disabled={processingLink}
+                    >
+                      Přihlásit heslem
+                    </CButton>
+                    <CButton
+                      type="button"
+                      color={authMode === "emailLink" ? "primary" : "secondary"}
+                      variant={authMode === "emailLink" ? undefined : "outline"}
+                      onClick={() => setAuthMode("emailLink")}
+                      disabled={processingLink}
+                    >
+                      Přihlásit odkazem
+                    </CButton>
+                  </div>
+
                   {/* Zobrazení hlášek přímo v UI */}
                   {message && <CAlert color="info">{message}</CAlert>}
 
@@ -178,36 +242,48 @@ const Login = ({ onLoginSuccess }) => {
                     />
                   </CInputGroup>
 
-                  <CInputGroup className="mb-4">
-                    <CInputGroupText>
-                      <CIcon icon={cilLockLocked} />
-                    </CInputGroupText>
-                    <CFormInput
-                      type="password"
-                      placeholder="Heslo"
-                      autoComplete="current-password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                  </CInputGroup>
+                  {authMode === "password" && !pendingEmailLink ? (
+                    <CInputGroup className="mb-4">
+                      <CInputGroupText>
+                        <CIcon icon={cilLockLocked} />
+                      </CInputGroupText>
+                      <CFormInput
+                        type="password"
+                        placeholder="Heslo"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </CInputGroup>
+                  ) : null}
 
-                  <CButton type="submit" color="primary" className="w-100">
-                    Přihlásit
+                  <CButton type="submit" color="primary" className="w-100" disabled={processingLink}>
+                    {pendingEmailLink
+                      ? processingLink
+                        ? "Dokončuji přihlášení..."
+                        : "Dokončit přihlášení odkazem"
+                      : authMode === "password"
+                        ? "Přihlásit"
+                        : "Poslat přihlašovací odkaz"}
                   </CButton>
 
-                  <CButton
-                    type="button"
-                    color="primary"
-                    className="w-100 mt-3"
-                    onClick={handleSendLoginLink}
-                    disabled={sendingLink || processingLink}
-                  >
-                    {sendingLink ? "Odesílám odkaz..." : "Poslat přihlašovací odkaz"}
-                  </CButton>
+                  {authMode === "emailLink" && !pendingEmailLink ? (
+                    <CButton
+                      type="button"
+                      color="primary"
+                      className="w-100 mt-3"
+                      onClick={handleSendLoginLink}
+                      disabled={sendingLink || processingLink}
+                    >
+                      {sendingLink ? "Odesílám odkaz..." : "Poslat přihlašovací odkaz"}
+                    </CButton>
+                  ) : null}
 
-                  <div className="mt-2 px-2 text-center text-body-secondary small">
-                    Pokud nechcete zadávat heslo, nechte si poslat jednorázový odkaz do e-mailu.
-                  </div>
+                  {authMode === "emailLink" && !pendingEmailLink ? (
+                    <div className="mt-2 px-2 text-center text-body-secondary small">
+                      Pokud nechcete zadávat heslo, nechte si poslat jednorázový odkaz do e-mailu.
+                    </div>
+                  ) : null}
 
                   <div className="mt-4 text-center">
                     <p>
