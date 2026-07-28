@@ -18,14 +18,23 @@ import api, { API_BASE_URL } from 'src/api/apiClient'
 
 const AppHeaderDropdown = () => {
   const navigate = useNavigate()
-  const { userEmail, setUserEmail, zakaznikId, setZakaznikId, zakaznikNazev, setZakaznikNazev, zakaznikIC, setZakaznikIC } = useContext(UserContext)
+  const {
+    userEmail,
+    setUserEmail,
+    zakaznikId,
+    setZakaznikId,
+    zakaznikNazev,
+    setZakaznikNazev,
+    zakaznikIC,
+    setZakaznikIC,
+  } = useContext(UserContext)
 
   const [customers, setCustomers] = useState([]) // Stav pro seznam zákazníků
 
   const handleLogout = async () => {
     try {
       await signOut(auth)
-      navigate('/login')
+      navigate('/login', { replace: true })
     } catch (error) {
       console.error('Error during sign out:', error)
     }
@@ -100,7 +109,9 @@ const AppHeaderDropdown = () => {
         </CDropdownHeader>
 
         {/* Dropdown pro výběr zákazníka */}
-        <CDropdownHeader className="bg-body-secondary fw-semibold">Vyberte zákazníka</CDropdownHeader>
+        <CDropdownHeader className="bg-body-secondary fw-semibold">
+          Vyberte zákazníka
+        </CDropdownHeader>
         <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
           {customers.length > 0 ? (
             customers.map((customer) => (
@@ -119,7 +130,9 @@ const AppHeaderDropdown = () => {
 
         <CDropdownDivider />
 
-        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">{userEmail}</CDropdownHeader>
+        <CDropdownHeader className="bg-body-secondary fw-semibold mb-2">
+          {userEmail}
+        </CDropdownHeader>
 
         <CDropdownDivider />
         <CDropdownItem onClick={handleLogout} style={{ cursor: 'pointer' }}>

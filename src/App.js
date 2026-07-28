@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { UserProvider } from './components/UserContext'
 import './scss/style.scss'
@@ -24,9 +25,11 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
 function App() {
   const [initializing, setInitializing] = useState(true)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user)
       setInitializing(false)
     })
 
@@ -37,7 +40,11 @@ function App() {
     if (initializing) {
       return loading
     }
-    return auth.currentUser ? element : <Navigate to="/login" />
+    return user ? element : <Navigate to="/login" replace />
+  }
+
+  PrivateRoute.propTypes = {
+    element: PropTypes.element.isRequired,
   }
 
   return (
